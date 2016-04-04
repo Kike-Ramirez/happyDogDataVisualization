@@ -16,7 +16,7 @@ float smoothM,smoothM2;
 PFont regF;
 PFont boldF;
 float scale;
-int count;
+int countSample, countAvg;
 
 void setup() {
   size(450,800);
@@ -52,22 +52,22 @@ void setup() {
 
   fillList();
   pos = 900;
-  count = 3;
+  countSample = 3;
 }
 
 void draw() {
   pos++;
   if(pos%10 == 0) {  
-      PImage img = big.get(0, 0, big.width, big.height);  
-      img.resize(width,height);
-      image(img,0,0);
+    PImage img = big.get(0, 0, big.width, big.height);  
+    img.resize(width,height);
+    image(img,0,0);
   }  
   
   //testDraw();
 
   XML[] childrenC = xmlCooked.getChildren("measure");
   if (pos%256 == 0) {
-    count++;
+    countSample++;
     aDC = childrenC[pos/256].getFloat("aDC");
     aFmin = childrenC[pos/256].getFloat("aFmin");
     aFmax = childrenC[pos/256].getFloat("aFmax");
@@ -104,8 +104,39 @@ void draw() {
     normeVmax = ((eVmax - eVmaxList.min())*maxVal)/(eVmaxList.max()-eVmaxList.min());
     
     if (happyC == 1.0) {
+      countAvg++;
       sumaDC = sumaDC + aDC;
-      normAvgaDC = ((sumaDC/(pos/256) - aDCList.min())*maxVal)/(aDCList.max()-aDCList.min()); 
+      sumaFmin = sumaFmin + aFmin;
+      sumaFmax = sumaFmax + aFmax;
+      sumaVmax = sumaVmax + aVmax;
+      sumgDC = sumgDC + gDC;
+      sumgFmin = sumgFmin + gFmin;
+      sumgFmax = sumgFmax + gFmax;
+      sumgVmax = sumgVmax + gVmax;
+      summDC = summDC + mDC;
+      summFmin = summFmin + mFmin;
+      summFmax = summFmax + mFmax;
+      summVmax = summVmax + mVmax;
+      sumeDC = sumeDC + eDC;
+      sumeFmin = sumeFmin + eFmin;
+      sumeFmax = sumeFmax + eFmax;
+      sumeVmax = sumeVmax + eVmax;
+      normAvgaDC = ((sumaDC/countAvg - aDCList.min())*maxVal)/(aDCList.max()-aDCList.min()); 
+      normAvgaFmin = ((sumaFmin/countAvg - aFminList.min())*maxVal)/(aFminList.max()-aFminList.min()); 
+      normAvgaFmax = ((sumaFmax/countAvg - aFmaxList.min())*maxVal)/(aFmaxList.max()-aFmaxList.min()); 
+      normAvgaVmax = ((sumaVmax/countAvg - aVmaxList.min())*maxVal)/(aVmaxList.max()-aVmaxList.min());
+      normAvggDC = ((sumgDC/countAvg - gDCList.min())*maxVal)/(gDCList.max()-gDCList.min()); 
+      normAvggFmin = ((sumgFmin/countAvg - gFminList.min())*maxVal)/(gFminList.max()-gFminList.min()); 
+      normAvggFmax = ((sumgFmax/countAvg - gFmaxList.min())*maxVal)/(gFmaxList.max()-gFmaxList.min()); 
+      normAvggVmax = ((sumgVmax/countAvg - gVmaxList.min())*maxVal)/(gVmaxList.max()-gVmaxList.min());
+      normAvgmDC = ((summDC/countAvg - mDCList.min())*maxVal)/(mDCList.max()-mDCList.min()); 
+      normAvgmFmin = ((summFmin/countAvg - mFminList.min())*maxVal)/(mFminList.max()-mFminList.min()); 
+      normAvgmFmax = ((summFmax/countAvg - mFmaxList.min())*maxVal)/(mFmaxList.max()-mFmaxList.min()); 
+      normAvgmVmax = ((summVmax/countAvg - mVmaxList.min())*maxVal)/(mVmaxList.max()-mVmaxList.min());
+      normAvgeDC = ((sumeDC/countAvg - eDCList.min())*maxVal)/(eDCList.max()-eDCList.min()); 
+      normAvgeFmin = ((sumeFmin/countAvg - eFminList.min())*maxVal)/(eFminList.max()-eFminList.min()); 
+      normAvgeFmax = ((sumeFmax/countAvg - eFmaxList.min())*maxVal)/(eFmaxList.max()-eFmaxList.min()); 
+      normAvgeVmax = ((sumeVmax/countAvg - eVmaxList.min())*maxVal)/(eVmaxList.max()-eVmaxList.min()); 
     }
   }
 
@@ -128,20 +159,50 @@ void draw() {
   smootheVmax = lerp(smootheVmax, normeVmax, amt);
 
   smoothAvgaDC = lerp(smoothAvgaDC, normAvgaDC, amt);
+  smoothAvgaFmin = lerp(smoothAvgaFmin, normAvgaFmin, amt);
+  smoothAvgaFmax = lerp(smoothAvgaFmax, normAvgaFmax, amt);
+  smoothAvgaVmax = lerp(smoothAvgaVmax, normAvgaVmax, amt);
+  smoothAvggDC = lerp(smoothAvggDC, normAvggDC, amt);
+  smoothAvggFmin = lerp(smoothAvggFmin, normAvggFmin, amt);
+  smoothAvggFmax = lerp(smoothAvggFmax, normAvggFmax, amt);
+  smoothAvggVmax = lerp(smoothAvggVmax, normAvggVmax, amt);
+  smoothAvgmDC = lerp(smoothAvgmDC, normAvgmDC, amt);
+  smoothAvgmFmin = lerp(smoothAvgmFmin, normAvgmFmin, amt);
+  smoothAvgmFmax = lerp(smoothAvgmFmax, normAvgmFmax, amt);
+  smoothAvgmVmax = lerp(smoothAvgmVmax, normAvgmVmax, amt);
+  smoothAvgeDC = lerp(smoothAvgeDC, normAvgeDC, amt);
+  smoothAvgeFmin = lerp(smoothAvgeFmin, normAvgeFmin, amt);
+  smoothAvgeFmax = lerp(smoothAvgeFmax, normAvgeFmax, amt);
+  smoothAvgeVmax = lerp(smoothAvgeVmax, normAvgeVmax, amt);
 
   big.beginDraw();
     big.background(bg);
     textDraw();
-    
+
+  float rectX = 1094.548;
+  float rectH = 58.405;  
   big.stroke(0);
-  big.strokeWeight(1);
+  big.strokeWeight(6);
   big.noFill();
-  //big.rect(125.5, 270.5, smoothAvgaDC-0.5, 11, 0, 20, 20, 0);
+  big.rect(rectX+3, 1131.347 + 0*77.873 + 3, smoothAvgaDC-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1131.347 + 1*77.873 + 3, smoothAvgaFmin-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1131.347 + 2*77.873 + 3, smoothAvgaFmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1131.347 + 3*77.873 + 3, smoothAvgaVmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1452.572 + 0*77.873 + 3, smoothAvggDC-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1452.572 + 1*77.873 + 3, smoothAvggFmin-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1452.572 + 2*77.873 + 3, smoothAvggFmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1452.572 + 3*77.873 + 3, smoothAvggVmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1773.798 + 0*77.873 + 3, smoothAvgmDC-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1773.798 + 1*77.873 + 3, smoothAvgmFmin-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1773.798 + 2*77.873 + 3, smoothAvgmFmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1773.798 + 3*77.873 + 3, smoothAvgmVmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 2094.798 + 0*77.873 + 3, smoothAvgeDC-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 2094.798 + 1*77.873 + 3, smoothAvgeFmin-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 2094.798 + 2*77.873 + 3, smoothAvgeFmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 2094.798 + 3*77.873 + 3, smoothAvgeVmax-3, rectH-6, 0, 20, 20, 0);
 
   big.noStroke();
   big.fill(0);
-  float rectX = 1094.548;
-  float rectH = 58.405;
   big.rect(rectX, 1131.347 + 0*77.873, smoothaDC, rectH, 0, 20, 20, 0);
   big.rect(rectX, 1131.347 + 1*77.873, smoothaFmin, rectH, 0, 20, 20, 0);
   big.rect(rectX, 1131.347 + 2*77.873, smoothaFmax, rectH, 0, 20, 20, 0);
@@ -326,7 +387,7 @@ void textDraw() {
   big.rotate(radians(-90));
   big.textAlign(CENTER);
 
-  big.text((number-256*count)+1 + "   /   256",-1180, 499.634+5.463);
+  big.text((number-256*countSample)+1 + "   /   256",-1180, 499.634+5.463);
   big.textFont(regF, 12);
   big.text(String.format("%.2f", ax),-1146.262, 712.754);
   big.text(String.format("%.2f", ay),-1147.521, 727.354);
