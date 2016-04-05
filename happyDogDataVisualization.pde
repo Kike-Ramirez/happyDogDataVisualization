@@ -14,24 +14,25 @@ float smoothaDC,smoothaFmin,smoothaFmax,smoothaVmax,smoothgDC,smoothgFmin,smooth
 float smoothAvgaDC,smoothAvgaFmin,smoothAvgaFmax,smoothAvgaVmax,smoothAvggDC,smoothAvggFmin,smoothAvggFmax,smoothAvggVmax,smoothAvgmDC,smoothAvgmFmin,smoothAvgmFmax,smoothAvgmVmax,smoothAvgeDC,smoothAvgeFmin,smoothAvgeFmax,smoothAvgeVmax;
 float smoothM,smoothM2;
 PFont walReg,walBold, incReg, incBold;
-float scale;
 int count256, countAvg, count0_255, count30;
 
 void setup() {
+  /* SETUP + BACKGROUND */
   size(450,800);
   big = createGraphics(2160,3840);
+  bg = loadImage("perrito.png");
+
+  /* INITIALISE RAW AND COOKED DATA FILES */
   xmlRaw = loadXML("raw_final.xml");
   xmlCooked = loadXML("cooked_final.xml");
-  bg = loadImage("perrito.png");
-  walReg = createFont("gt-walsheim-regular-web.otf",6);
-  walBold = createFont("GT-Walsheim-Bold.ttf",21);
-  incReg = createFont("Inconsolata-Regular.ttf",6);
-  incBold = createFont("Inconsolata-Bold.ttf",21);
-
-  scale = 4.8;
   
-  maxVal = 617;
+  /* INITIALISE FONTS */
+  walReg = createFont("gt-walsheim-regular-web.otf",12);
+  walBold = createFont("GT-Walsheim-Bold.ttf",12);
+  incReg = createFont("Inconsolata-Regular.ttf",12);
+  incBold = createFont("Inconsolata-Bold.ttf",12);
 
+  /* INITIALISE LISTS (used for normalising) + FILL LIST ON STARTUP */
   gzList = new FloatList();
 
   aDCList = new FloatList();
@@ -51,26 +52,39 @@ void setup() {
   eFmaxList = new FloatList();
   eVmaxList = new FloatList();
 
-  //smooth();
-
   fillList();
-   pos = 13030;
-   count256 = 50;
+
+  /* maxVal IS MAXIMUM BAR WIDTH */
+  maxVal = 617;
+
+  /* SETUP SMOOTH TO START IN THE MIDDLE NOT FROM ZERO */
+  smoothM = 918.205;
+  smoothM2 = 918.205;
+
+  /* UNCOMMENT TO START AT LATER SAMPLES */
+  // pos = 13030;
+  // count256 = int(pos/256);
 }
 
 void draw() {
+  /* MAIN COUNTER, FOLLOWS SAMPLES RAW DATA */
   pos++;
+
+  /* SHOW SMALLER RENDER EVERY 10TH POSITION THAT FITS SCREEN */
   if(pos%10 == 0) {  
     PImage img = big.get(0, 0, big.width, big.height);  
     img.resize(width,height);
     image(img,0,0);
   }  
-  
-  //testDraw();
 
+  /* GET COOKED DATA */
   XML[] childrenC = xmlCooked.getChildren("measure");
+
+  /* CHANGES EVERY 256 SAMPLES */
   if (pos%256 == 0) {
+    /* SUBCOUNTER EVERY 256 SAMPLES */
     count256++;
+    /* ASSIGN COOKED DATA */
     aDC = childrenC[pos/256-1].getFloat("aDC");
     aFmin = childrenC[pos/256-1].getFloat("aFmin");
     aFmax = childrenC[pos/256-1].getFloat("aFmax");
@@ -89,6 +103,7 @@ void draw() {
     eVmax = childrenC[pos/256-1].getFloat("eVmax");
     happyC = childrenC[pos/256-1].getFloat("happy");
 
+    /* NORMALISE VALUES FOR BARS */
     normaDC = ((aDC - aDCList.min())*maxVal)/(aDCList.max()-aDCList.min());
     normaFmin = ((aFmin - aFminList.min())*maxVal)/(aFminList.max()-aFminList.min());
     normaFmax = ((aFmax - aFmaxList.min())*maxVal)/(aFmaxList.max()-aFmaxList.min());
@@ -106,8 +121,11 @@ void draw() {
     normeFmax = ((eFmax - eFmaxList.min())*maxVal)/(eFmaxList.max()-eFmaxList.min());
     normeVmax = ((eVmax - eVmaxList.min())*maxVal)/(eVmaxList.max()-eVmaxList.min());
     
+    /* CALCULATE DATA FOR GETTING AVERAGE ONLY WHEN HAPPY */
     if (happyC == 1.0) {
+      /* SUBCOUNTER EVERY TIME VECTOR IS HAPPY */
       countAvg++;
+      /* MAKE SUM FOR AVERAGE BARS */
       sumaDC = sumaDC + aDC;
       sumaFmin = sumaFmin + aFmin;
       sumaFmax = sumaFmax + aFmax;
@@ -124,6 +142,8 @@ void draw() {
       sumeFmin = sumeFmin + eFmin;
       sumeFmax = sumeFmax + eFmax;
       sumeVmax = sumeVmax + eVmax;
+
+      /* NORMALISE AVERAGE VALUES FOR AVERAGE BARS */
       normAvgaDC = ((sumaDC/countAvg - aDCList.min())*maxVal)/(aDCList.max()-aDCList.min()); 
       normAvgaFmin = ((sumaFmin/countAvg - aFminList.min())*maxVal)/(aFminList.max()-aFminList.min()); 
       normAvgaFmax = ((sumaFmax/countAvg - aFmaxList.min())*maxVal)/(aFmaxList.max()-aFmaxList.min()); 
@@ -143,6 +163,7 @@ void draw() {
     }
   }
 
+  /* SMOOTHEN VALUES FOR HIGHER READABILITY WITH LINEAR INTERPOLATION, amt = 1 NORMAL */
   float amt = 0.05;
   smoothaDC = lerp(smoothaDC, normaDC, amt);
   smoothaFmin = lerp(smoothaFmin, normaFmin, amt);
@@ -178,67 +199,82 @@ void draw() {
   smoothAvgeFmax = lerp(smoothAvgeFmax, normAvgeFmax, amt);
   smoothAvgeVmax = lerp(smoothAvgeVmax, normAvgeVmax, amt);
 
+  /* START DRAWING ON BIG RENDER */
   big.beginDraw();
-    big.background(bg);
-    textDraw();
+  big.background(bg);
+  
+  /* DRAW ALL THE TEXT */
+  textDraw();
 
+  /* ------------------------ BARS SECTION ------------------------ */
   float rectX = 1094.548;
+  float rectY1 = 1043.347;
+  float rectY2 = 1364.572;
+  float rectY3 = 1685.798;
+  float rectY4 = 2007.023;
   float rectH = 58.405;  
-  big.stroke(0);
-  big.strokeWeight(6);
-  big.noFill();
-  big.rect(rectX+3, 1043.347 + 0*77.873 + 3, smoothAvgaDC-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1043.347 + 1*77.873 + 3, smoothAvgaFmin-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1043.347 + 2*77.873 + 3, smoothAvgaFmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1043.347 + 3*77.873 + 3, smoothAvgaVmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1364.572 + 0*77.873 + 3, smoothAvggDC-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1364.572 + 1*77.873 + 3, smoothAvggFmin-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1364.572 + 2*77.873 + 3, smoothAvggFmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1364.572 + 3*77.873 + 3, smoothAvggVmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1685.798 + 0*77.873 + 3, smoothAvgmDC-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1685.798 + 1*77.873 + 3, smoothAvgmFmin-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1685.798 + 2*77.873 + 3, smoothAvgmFmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1685.798 + 3*77.873 + 3, smoothAvgmVmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 2007.023 + 0*77.873 + 3, smoothAvgeDC-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 2007.023 + 1*77.873 + 3, smoothAvgeFmin-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 2007.023 + 2*77.873 + 3, smoothAvgeFmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 2007.023 + 3*77.873 + 3, smoothAvgeVmax-3, rectH-6, 0, 20, 20, 0);
+  float rectSpacing = 77.873;
+  float rectStrokeWeight = 6;
 
+  /* AVERAGE BARS BEFORE BARS */
+  big.stroke(0);
+  big.strokeWeight(rectStrokeWeight);
+  big.fill(255,0,0);
+  big.rect(rectX + 3, rectY1 + 0 * rectSpacing + 3, smoothAvgaDC - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY1 + 1 * rectSpacing + 3, smoothAvgaFmin - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY1 + 2 * rectSpacing + 3, smoothAvgaFmax - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY1 + 3 * rectSpacing + 3, smoothAvgaVmax - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY2 + 0 * rectSpacing + 3, smoothAvggDC - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY2 + 1 * rectSpacing + 3, smoothAvggFmin - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY2 + 2 * rectSpacing + 3, smoothAvggFmax - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY2 + 3 * rectSpacing + 3, smoothAvggVmax - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY3 + 0 * rectSpacing + 3, smoothAvgmDC - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY3 + 1 * rectSpacing + 3, smoothAvgmFmin - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY3 + 2 * rectSpacing + 3, smoothAvgmFmax - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY3 + 3 * rectSpacing + 3, smoothAvgmVmax - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY4 + 0 * rectSpacing + 3, smoothAvgeDC - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY4 + 1 * rectSpacing + 3, smoothAvgeFmin - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY4 + 2 * rectSpacing + 3, smoothAvgeFmax - 3, rectH - 6, 0, 20, 20, 0);
+  big.rect(rectX + 3, rectY4 + 3 * rectSpacing + 3, smoothAvgeVmax - 3, rectH - 6, 0, 20, 20, 0);
+
+  /* BARS */
   big.noStroke();
   big.fill(0);
-  big.rect(rectX, 1043.347 + 0*77.873, smoothaDC, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1043.347 + 1*77.873, smoothaFmin, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1043.347 + 2*77.873, smoothaFmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1043.347 + 3*77.873, smoothaVmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1364.572 + 0*77.873, smoothgDC, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1364.572 + 1*77.873, smoothgFmin, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1364.572 + 2*77.873, smoothgFmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1364.572 + 3*77.873, smoothgVmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1685.798 + 0*77.873, smoothmDC, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1685.798 + 1*77.873, smoothmFmin, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1685.798 + 2*77.873, smoothmFmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1685.798 + 3*77.873, smoothmVmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 2007.023 + 0*77.873, smootheDC, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 2007.023 + 1*77.873, smootheFmin, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 2007.023 + 2*77.873, smootheFmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 2007.023 + 3*77.873, smootheVmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY1 + 0 * rectSpacing, smoothaDC, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY1 + 1 * rectSpacing, smoothaFmin, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY1 + 2 * rectSpacing, smoothaFmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY1 + 3 * rectSpacing, smoothaVmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY2 + 0 * rectSpacing, smoothgDC, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY2 + 1 * rectSpacing, smoothgFmin, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY2 + 2 * rectSpacing, smoothgFmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY2 + 3 * rectSpacing, smoothgVmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY3 + 0 * rectSpacing, smoothmDC, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY3 + 1 * rectSpacing, smoothmFmin, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY3 + 2 * rectSpacing, smoothmFmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY3 + 3 * rectSpacing, smoothmVmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY4 + 0 * rectSpacing, smootheDC, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY4 + 1 * rectSpacing, smootheFmin, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY4 + 2 * rectSpacing, smootheFmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY4 + 3 * rectSpacing, smootheVmax, rectH, 0, 20, 20, 0);
 
+  /* ASSIGN COOKED DATA (used for tail and sample counter) */
   XML[] childrenR = xmlRaw.getChildren("Measure");
   float gz = childrenR[pos].getFloat("gz");
   int happy = childrenR[pos].getInt("happy");
-
-  big.stroke(0);
-  big.strokeWeight(2.6);
-  big.noFill();
-    
+  
+  /* SUBCOUNTER THAT GOES FROM 0 TO 255 EVERY 256 SAMPLES */  
   count0_255 = pos-256*count256;
-  big.textFont(walReg, 8);
 
+  /* ------------------------ SAMPLE COUNTER SECTION ------------------------ */ 
   float column1 = 568.555;
   float column2 = 595.028;
   float column3 = 621.501;
   float radius = 15.156;
 
+  /* DRAW FULL OR EMPTY CIRCLES */
+  big.stroke(0);
+  big.strokeWeight(2.6);
+  big.noFill();
   for (int i = 0; i < count0_255; ++i) {
     if (i<86) {
       if(childrenR[i + 256*count256].getInt("happy") == 1){
@@ -269,6 +305,7 @@ void draw() {
     }
   }
 
+  /* DRAW CROSSES */
   big.stroke(0);
   big.strokeWeight(2.6);
   big.noFill();
@@ -287,6 +324,7 @@ void draw() {
     }
   }
 
+  /* ------------------------ TAIL SECTION ------------------------ */
   float m = map(gz, gzList.min(), gzList.max(), 447.746, 1388.663);
   float m2 = map(gz, gzList.min(), gzList.max(), 682.975, 1153.434);
   smoothM = lerp(smoothM, m, .1);
@@ -309,21 +347,22 @@ void draw() {
   big.fill(0);
   big.arc(smoothM2, 692.8335, 60.232, 60.232, 0-QUARTER_PI, HALF_PI+QUARTER_PI);
 
+  /* ------------------------ HAPPY CIRCLE SECTION ------------------------ */
   if (happyC == 1.0) {
     big.noStroke();
     big.fill(0);
     big.ellipse(1124.29, 3073.26, 21.287, 21.287);
   }
 
-  if (pos == 15490) {
-    pos = 0;
-  }
-
+  /* START DRAWING ON BIG RENDER */
   big.endDraw();
+
+  /* ------------------------ SAVE SECTION ------------------------ */
   //big.save("save"+pos+".png");
 
 }
 
+/* FILLLIST FUNCTION */
 void fillList() {
   XML[] childrenR = xmlRaw.getChildren("Measure");
   XML[] childrenC = xmlCooked.getChildren("measure");
@@ -352,63 +391,7 @@ void fillList() {
   }
 }
 
-
-void testDraw() {   
-  XML[] childrenR = xmlRaw.getChildren("Measure");
-
-  int number = childrenR[pos].getInt("Number");
-  float ax = childrenR[pos].getFloat("ax");
-  float ay = childrenR[pos].getFloat("ay");
-  float az = childrenR[pos].getFloat("az");
-  float gx = childrenR[pos].getFloat("gx");
-  float gy = childrenR[pos].getFloat("gy");
-  float gz = childrenR[pos].getFloat("gz");
-  float mx = childrenR[pos].getFloat("mx");
-  float my = childrenR[pos].getFloat("my");
-  float mz = childrenR[pos].getFloat("mz");
-  float ex = childrenR[pos].getFloat("ex");
-  float ey = childrenR[pos].getFloat("ey");
-  float ez = childrenR[pos].getFloat("ez");
-  int happy = childrenR[pos].getInt("happy");
-  
-  fill(0);
-  textFont(walReg, 12);
-
-  text("framerate: " + String.format("%.2f", frameRate),45, 55);
-  text("number: " + number,45, 65);
-  text("ax: " + String.format("%.2f", ax),45, 75);
-  text("ay: " + String.format("%.2f", ay),45, 85);
-  text("az: " + String.format("%.2f", az),45, 95);
-  text("gx: " + String.format("%.2f", gx),45, 105);
-  text("gy: " + String.format("%.2f", gy),45, 115);
-  text("gz: " + String.format("%.2f", gz),45, 125);
-  text("mx: " + String.format("%.2f", mx),45, 135);
-  text("my: " + String.format("%.2f", my),45, 145);
-  text("mz: " + String.format("%.2f", mz),45, 155);
-  text("ex: " + String.format("%.2f", ex),45, 165);
-  text("ey: " + String.format("%.2f", ey),45, 175);
-  text("ez: " + String.format("%.2f", ez),45, 185);
-  text("happy: " + happy,45, 195);
-
-  text("aDC: " + String.format("%.2f", aDC),150, 55);
-  text("aFmin: " + String.format("%.2f", aFmin),150, 65);
-  text("aFmax: " + String.format("%.2f", aFmax),150, 75);
-  text("aVmax: " + String.format("%.2f", aVmax),150, 85);
-  text("gDC: " + String.format("%.2f", gDC),150, 95);
-  text("gFmin: " + String.format("%.2f", gFmin),150, 105);
-  text("gFmax: " + String.format("%.2f", gFmax),150, 115);
-  text("gVmax: " + String.format("%.2f", gVmax),150, 125);
-  text("mDC: " + String.format("%.2f", mDC),150, 135);
-  text("mFmin: " + String.format("%.2f", mFmin),150, 145);
-  text("mFmax: " + String.format("%.2f", mFmax),150, 155);
-  text("mVmax: " + String.format("%.2f", mVmax),150, 165);
-  text("eDC: " + String.format("%.2f", eDC),150, 175);
-  text("eFmin: " + String.format("%.2f", eFmin),150, 185);
-  text("eFmax: " + String.format("%.2f", eFmax),150, 195);
-  text("eVmax: " + String.format("%.2f", eVmax),150, 205);
-  text("happy: " + happyC,150, 215);
-}
-
+/* DRAW TEXT FUNCTION */
 void textDraw() {   
   XML[] childrenR = xmlRaw.getChildren("Measure");
   XML[] childrenC = xmlCooked.getChildren("measure");
@@ -428,6 +411,7 @@ void textDraw() {
   float ez = childrenR[pos].getFloat("ez");
   int happy = childrenR[pos].getInt("happy");
   
+  /* RAW DATA */
   big.fill(0);
   big.pushMatrix();
   big.rotate(radians(-90));
@@ -453,6 +437,7 @@ void textDraw() {
 
   big.popMatrix();
 
+  /* HAPPY OR NOT HAPPY */
   if (happyC == 1.0) {
     big.textFont(walReg,30);
     big.text("HAPPY",1613.146,3227.794);
@@ -461,9 +446,16 @@ void textDraw() {
      big.text("NOT HAPPY",1613.146,3227.794);
   }
 
+  /* ID */
   big.textFont(incBold,24);
   big.text(nf(pos/256,14),918.343, 3072.907+6);
-    
+
+  /* SUBCOUNTER PREVENTING OVERFLOW ID LIST */
+  if (count256 > 30) {
+    count30 = count256-30;
+  }
+  
+  /* ID LIST */
   float col1 = 516.045;
   float col2 = 678.01;
   float col3 = 838.942;
@@ -473,11 +465,6 @@ void textDraw() {
   float b = 3230.353;
   float spacing = 14.602;
   big.textFont(incReg,13);
-
-  if (count256 > 30) {
-    count30 = count256-30;
-  }
-  
 
   for (int i = 0; i < count256; ++i) {
     if (i<5) {
@@ -530,9 +517,3 @@ void textDraw() {
     }
   }
 }
-
-void keyPressed(){
-  pos = 0;
-}
-
- 
