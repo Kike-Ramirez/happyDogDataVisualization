@@ -13,10 +13,9 @@ float normAvgaDC,normAvgaFmin,normAvgaFmax,normAvgaVmax,normAvggDC,normAvggFmin,
 float smoothaDC,smoothaFmin,smoothaFmax,smoothaVmax,smoothgDC,smoothgFmin,smoothgFmax,smoothgVmax,smoothmDC,smoothmFmin,smoothmFmax,smoothmVmax,smootheDC,smootheFmin,smootheFmax,smootheVmax;
 float smoothAvgaDC,smoothAvgaFmin,smoothAvgaFmax,smoothAvgaVmax,smoothAvggDC,smoothAvggFmin,smoothAvggFmax,smoothAvggVmax,smoothAvgmDC,smoothAvgmFmin,smoothAvgmFmax,smoothAvgmVmax,smoothAvgeDC,smoothAvgeFmin,smoothAvgeFmax,smoothAvgeVmax;
 float smoothM,smoothM2;
-PFont regF;
-PFont boldF;
+PFont walReg,walBold, incReg, incBold;
 float scale;
-int countSample, countAvg;
+int count256, countAvg, count0_255, count30;
 
 void setup() {
   size(450,800);
@@ -24,8 +23,10 @@ void setup() {
   xmlRaw = loadXML("raw_final.xml");
   xmlCooked = loadXML("cooked_final.xml");
   bg = loadImage("perrito.png");
-  regF = createFont("gt-walsheim-regular-web.otf",16);
-  boldF = createFont("GT-Walsheim-Bold.ttf",21);
+  walReg = createFont("gt-walsheim-regular-web.otf",6);
+  walBold = createFont("GT-Walsheim-Bold.ttf",21);
+  incReg = createFont("Inconsolata-Regular.ttf",6);
+  incBold = createFont("Inconsolata-Bold.ttf",21);
 
   scale = 4.8;
   
@@ -50,9 +51,11 @@ void setup() {
   eFmaxList = new FloatList();
   eVmaxList = new FloatList();
 
+  //smooth();
+
   fillList();
-  pos = 900;
-  countSample = 3;
+   pos = 13030;
+   count256 = 50;
 }
 
 void draw() {
@@ -67,24 +70,24 @@ void draw() {
 
   XML[] childrenC = xmlCooked.getChildren("measure");
   if (pos%256 == 0) {
-    countSample++;
-    aDC = childrenC[pos/256].getFloat("aDC");
-    aFmin = childrenC[pos/256].getFloat("aFmin");
-    aFmax = childrenC[pos/256].getFloat("aFmax");
-    aVmax = childrenC[pos/256].getFloat("aVmax");
-    gDC = childrenC[pos/256].getFloat("gDC");
-    gFmin = childrenC[pos/256].getFloat("gFmin");
-    gFmax = childrenC[pos/256].getFloat("gFmax");
-    gVmax = childrenC[pos/256].getFloat("gVmax");
-    mDC = childrenC[pos/256].getFloat("mDC");
-    mFmin = childrenC[pos/256].getFloat("mFmin");
-    mFmax = childrenC[pos/256].getFloat("mFmax");
-    mVmax = childrenC[pos/256].getFloat("mVmax");
-    eDC = childrenC[pos/256].getFloat("eDC");
-    eFmin = childrenC[pos/256].getFloat("eFmin");
-    eFmax = childrenC[pos/256].getFloat("eFmax");
-    eVmax = childrenC[pos/256].getFloat("eVmax");
-    happyC = childrenC[pos/256].getFloat("happy");
+    count256++;
+    aDC = childrenC[pos/256-1].getFloat("aDC");
+    aFmin = childrenC[pos/256-1].getFloat("aFmin");
+    aFmax = childrenC[pos/256-1].getFloat("aFmax");
+    aVmax = childrenC[pos/256-1].getFloat("aVmax");
+    gDC = childrenC[pos/256-1].getFloat("gDC");
+    gFmin = childrenC[pos/256-1].getFloat("gFmin");
+    gFmax = childrenC[pos/256-1].getFloat("gFmax");
+    gVmax = childrenC[pos/256-1].getFloat("gVmax");
+    mDC = childrenC[pos/256-1].getFloat("mDC");
+    mFmin = childrenC[pos/256-1].getFloat("mFmin");
+    mFmax = childrenC[pos/256-1].getFloat("mFmax");
+    mVmax = childrenC[pos/256-1].getFloat("mVmax");
+    eDC = childrenC[pos/256-1].getFloat("eDC");
+    eFmin = childrenC[pos/256-1].getFloat("eFmin");
+    eFmax = childrenC[pos/256-1].getFloat("eFmax");
+    eVmax = childrenC[pos/256-1].getFloat("eVmax");
+    happyC = childrenC[pos/256-1].getFloat("happy");
 
     normaDC = ((aDC - aDCList.min())*maxVal)/(aDCList.max()-aDCList.min());
     normaFmin = ((aFmin - aFminList.min())*maxVal)/(aFminList.max()-aFminList.min());
@@ -184,53 +187,103 @@ void draw() {
   big.stroke(0);
   big.strokeWeight(6);
   big.noFill();
-  big.rect(rectX+3, 1131.347 + 0*77.873 + 3, smoothAvgaDC-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1131.347 + 1*77.873 + 3, smoothAvgaFmin-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1131.347 + 2*77.873 + 3, smoothAvgaFmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1131.347 + 3*77.873 + 3, smoothAvgaVmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1452.572 + 0*77.873 + 3, smoothAvggDC-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1452.572 + 1*77.873 + 3, smoothAvggFmin-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1452.572 + 2*77.873 + 3, smoothAvggFmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1452.572 + 3*77.873 + 3, smoothAvggVmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1773.798 + 0*77.873 + 3, smoothAvgmDC-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1773.798 + 1*77.873 + 3, smoothAvgmFmin-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1773.798 + 2*77.873 + 3, smoothAvgmFmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 1773.798 + 3*77.873 + 3, smoothAvgmVmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 2094.798 + 0*77.873 + 3, smoothAvgeDC-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 2094.798 + 1*77.873 + 3, smoothAvgeFmin-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 2094.798 + 2*77.873 + 3, smoothAvgeFmax-3, rectH-6, 0, 20, 20, 0);
-  big.rect(rectX+3, 2094.798 + 3*77.873 + 3, smoothAvgeVmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1043.347 + 0*77.873 + 3, smoothAvgaDC-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1043.347 + 1*77.873 + 3, smoothAvgaFmin-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1043.347 + 2*77.873 + 3, smoothAvgaFmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1043.347 + 3*77.873 + 3, smoothAvgaVmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1364.572 + 0*77.873 + 3, smoothAvggDC-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1364.572 + 1*77.873 + 3, smoothAvggFmin-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1364.572 + 2*77.873 + 3, smoothAvggFmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1364.572 + 3*77.873 + 3, smoothAvggVmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1685.798 + 0*77.873 + 3, smoothAvgmDC-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1685.798 + 1*77.873 + 3, smoothAvgmFmin-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1685.798 + 2*77.873 + 3, smoothAvgmFmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 1685.798 + 3*77.873 + 3, smoothAvgmVmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 2007.023 + 0*77.873 + 3, smoothAvgeDC-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 2007.023 + 1*77.873 + 3, smoothAvgeFmin-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 2007.023 + 2*77.873 + 3, smoothAvgeFmax-3, rectH-6, 0, 20, 20, 0);
+  big.rect(rectX+3, 2007.023 + 3*77.873 + 3, smoothAvgeVmax-3, rectH-6, 0, 20, 20, 0);
 
   big.noStroke();
   big.fill(0);
-  big.rect(rectX, 1131.347 + 0*77.873, smoothaDC, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1131.347 + 1*77.873, smoothaFmin, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1131.347 + 2*77.873, smoothaFmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1131.347 + 3*77.873, smoothaVmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1452.572 + 0*77.873, smoothgDC, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1452.572 + 1*77.873, smoothgFmin, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1452.572 + 2*77.873, smoothgFmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1452.572 + 3*77.873, smoothgVmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1773.798 + 0*77.873, smoothmDC, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1773.798 + 1*77.873, smoothmFmin, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1773.798 + 2*77.873, smoothmFmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 1773.798 + 3*77.873, smoothmVmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 2094.798 + 0*77.873, smootheDC, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 2094.798 + 1*77.873, smootheFmin, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 2094.798 + 2*77.873, smootheFmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, 2094.798 + 3*77.873, smootheVmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 1043.347 + 0*77.873, smoothaDC, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 1043.347 + 1*77.873, smoothaFmin, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 1043.347 + 2*77.873, smoothaFmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 1043.347 + 3*77.873, smoothaVmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 1364.572 + 0*77.873, smoothgDC, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 1364.572 + 1*77.873, smoothgFmin, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 1364.572 + 2*77.873, smoothgFmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 1364.572 + 3*77.873, smoothgVmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 1685.798 + 0*77.873, smoothmDC, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 1685.798 + 1*77.873, smoothmFmin, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 1685.798 + 2*77.873, smoothmFmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 1685.798 + 3*77.873, smoothmVmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 2007.023 + 0*77.873, smootheDC, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 2007.023 + 1*77.873, smootheFmin, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 2007.023 + 2*77.873, smootheFmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, 2007.023 + 3*77.873, smootheVmax, rectH, 0, 20, 20, 0);
 
   XML[] childrenR = xmlRaw.getChildren("Measure");
   float gz = childrenR[pos].getFloat("gz");
   int happy = childrenR[pos].getInt("happy");
 
-  if (pos>23) {
-    for (int i=0;i<23;i++) { 
-      if(childrenR[pos-i].getInt("happy") == 1) {
-        big.noStroke();
+  big.stroke(0);
+  big.strokeWeight(2.6);
+  big.noFill();
+    
+  count0_255 = pos-256*count256;
+  big.textFont(walReg, 8);
+
+  float column1 = 568.555;
+  float column2 = 595.028;
+  float column3 = 621.501;
+  float radius = 15.156;
+
+  for (int i = 0; i < count0_255; ++i) {
+    if (i<86) {
+      if(childrenR[i + 256*count256].getInt("happy") == 1){
         big.fill(0);
-        big.ellipse(594.072, 1191 + i*73, 21.287, 21.287);
+        big.noStroke();
+        big.ellipse(column1, 1055.091 + i*20, radius, radius);
+      } else {
+        big.ellipse(column1, 1055.091 + i*20, radius-0.5, radius-0.5);
       }
+    } 
+    if (i>=86 && i<172) {
+      if(childrenR[i + 256*count256].getInt("happy") == 1){
+        big.fill(0);
+        big.noStroke();
+        big.ellipse(column2, 1055.091 + i*20-1720, radius, radius);
+      } else {
+        big.ellipse(column2, 1055.091 + i*20-1720, radius-0.5, radius-0.5);
+      }
+    }
+    if (i>=172) {
+      if(childrenR[i + 256*count256].getInt("happy") == 1){
+        big.fill(0);
+        big.noStroke();
+        big.ellipse(column3, 1055.091 + i*20-3440, radius, radius);
+      } else {
+        big.ellipse(column3, 1055.091 + i*20-3440, radius-0.5, radius-0.5);
+      }
+    }
+  }
+
+  big.stroke(0);
+  big.strokeWeight(2.6);
+  big.noFill();
+  for (int i = count0_255; i < 256; ++i) {
+    if (i<86) {
+      big.line(column1-(radius/2-3), (1055.091 + i*20)-(radius/2-3), column1+(radius/2-3), (1055.091 + i*20)+(radius/2-3));
+      big.line(column1-(radius/2-3), (1055.091 + i*20)+(radius/2-3), column1+(radius/2-3), (1055.091 + i*20)-(radius/2-3));
+    }
+    if (i>=86 && i<172) {
+      big.line(column2-(radius/2-3), (1055.091 + i*20-1720)-(radius/2-3), column2+(radius/2-3), (1055.091 + i*20-1720)+(radius/2-3));
+      big.line(column2-(radius/2-3), (1055.091 + i*20-1720)+(radius/2-3), column2+(radius/2-3), (1055.091 + i*20-1720)-(radius/2-3));
+    }
+    if (i>=172) {
+      big.line(column3-(radius/2-3), (1055.091 + i*20-3440)-(radius/2-3), column3+(radius/2-3), (1055.091 + i*20-3440)+(radius/2-3));
+      big.line(column3-(radius/2-3), (1055.091 + i*20-3440)+(radius/2-3), column3+(radius/2-3), (1055.091 + i*20-3440)-(radius/2-3));
     }
   }
 
@@ -243,7 +296,7 @@ void draw() {
   big.strokeWeight(6);
   big.fill(255);
 
-  big.line(918.5,1013.667,smoothM,372);
+  big.line(918.343,926.335,smoothM,401);
 
   big.ellipse(smoothM2, 692.8335, 116.323,116.323);
 
@@ -259,7 +312,7 @@ void draw() {
   if (happyC == 1.0) {
     big.noStroke();
     big.fill(0);
-    big.ellipse(1124.29, 3161.26, 21.287, 21.287);
+    big.ellipse(1124.29, 3073.26, 21.287, 21.287);
   }
 
   if (pos == 15490) {
@@ -319,7 +372,7 @@ void testDraw() {
   int happy = childrenR[pos].getInt("happy");
   
   fill(0);
-  textFont(regF, 12);
+  textFont(walReg, 12);
 
   text("framerate: " + String.format("%.2f", frameRate),45, 55);
   text("number: " + number,45, 65);
@@ -354,16 +407,11 @@ void testDraw() {
   text("eFmax: " + String.format("%.2f", eFmax),150, 195);
   text("eVmax: " + String.format("%.2f", eVmax),150, 205);
   text("happy: " + happyC,150, 215);
-
-  textFont(boldF);
-  //text("A",50,330);
-  //text("G",50,430);
-  //text("M",50,530);
-  //text("E",50,630);
 }
 
 void textDraw() {   
   XML[] childrenR = xmlRaw.getChildren("Measure");
+  XML[] childrenC = xmlCooked.getChildren("measure");
 
   int number = childrenR[pos].getInt("Number");
   float ax = childrenR[pos].getFloat("ax");
@@ -381,44 +429,106 @@ void textDraw() {
   int happy = childrenR[pos].getInt("happy");
   
   big.fill(0);
-  big.textFont(regF, 10);
   big.pushMatrix();
-  //big.translate(big.width/2,0);
   big.rotate(radians(-90));
   big.textAlign(CENTER);
 
-  big.text((number-256*countSample)+1 + "   /   256",-1180, 499.634+5.463);
-  big.textFont(regF, 12);
-  big.text(String.format("%.2f", ax),-1146.262, 712.754);
-  big.text(String.format("%.2f", ay),-1147.521, 727.354);
-  big.text(String.format("%.2f", az),-1147.293, 741.954);
-  big.text(String.format("%.2f", gx),-1467.543, 712.754);
-  big.text(String.format("%.2f", gy),-1468.804, 727.354);
-  big.text(String.format("%.2f", gz),-1468.576, 741.954);
-  big.text(String.format("%.2f", mx),-1789.184, 712.754);
-  big.text(String.format("%.2f", my),-1790.445, 727.354);
-  big.text(String.format("%.2f", mz),-1790.217, 741.954);
-  big.text(String.format("%.2f", ex),-2109.803, 712.754);
-  big.text(String.format("%.2f", ey),-2111.064, 727.354);
-  big.text(String.format("%.2f", ez),-2110.836, 741.954);
-  big.text(happy,-2438.25,733.129+8.684);
+  big.textFont(walReg, 10);
+  big.text(count0_255 + "      /      255",-1098.563, 505.097);
 
-  // text("happy: " + happyC,150, 215);
+  big.textFont(walReg, 12);
+  big.text("ax = " + String.format("%.2f", ax),-1068.918, 709.885);
+  big.text("ay = " + String.format("%.2f", ay),-1068.918, 724.485);
+  big.text("az = " + String.format("%.2f", az),-1068.918, 739.085);
+  big.text("gx = " + String.format("%.2f", gx),-1392.175, 709.885);
+  big.text("gy = " + String.format("%.2f", gy),-1392.175, 724.485);
+  big.text("gz = " + String.format("%.2f", gz),-1392.175, 739.085);
+  big.text("mx = " + String.format("%.2f", mx),-1718.025, 709.885);
+  big.text("my = " + String.format("%.2f", my),-1718.025, 724.485);
+  big.text("mz = " + String.format("%.2f", mz),-1718.025, 739.085);
+  big.text("ex = " + String.format("%.2f", ex),-2036.524, 709.885);
+  big.text("ey = " + String.format("%.2f", ey),-2036.524, 724.485);
+  big.text("ez = " + String.format("%.2f", ez),-2036.524, 739.085);
+  big.text("happy = " + happy,-2356.194,739.085);
+
   big.popMatrix();
 
   if (happyC == 1.0) {
-    big.textFont(boldF,35);
-    big.text("HAPPY",1286.048,3170.563);
+    big.textFont(walReg,30);
+    big.text("HAPPY",1613.146,3227.794);
   } else {
-     big.textFont(boldF,26);
-     big.text("NOT HAPPY",1286.048,3167.563);
+     big.textFont(walReg,30);
+     big.text("NOT HAPPY",1613.146,3227.794);
   }
 
-  // textFont(boldF);
-  //text("A",50,330);
-  //text("G",50,430);
-  //text("M",50,530);
-  //text("E",50,630);
+  big.textFont(incBold,24);
+  big.text(nf(pos/256,14),918.343, 3072.907+6);
+    
+  float col1 = 516.045;
+  float col2 = 678.01;
+  float col3 = 838.942;
+  float col4 = 1000.907;
+  float col5 = 1162.675;
+  float col6 = 1324.64;
+  float b = 3230.353;
+  float spacing = 14.602;
+  big.textFont(incReg,13);
+
+  if (count256 > 30) {
+    count30 = count256-30;
+  }
+  
+
+  for (int i = 0; i < count256; ++i) {
+    if (i<5) {
+      if (childrenC[i+count30].getFloat("happy") == 0.0) {
+        big.fill(179, 179, 179);
+      } else {
+        big.fill(0);
+      }
+      big.text(nf(i+count30,14), col1, b+i*spacing);
+    } 
+    if (i>=5 && i<10) {
+      if (childrenC[i+count30].getFloat("happy") == 0.0) {
+        big.fill(179, 179, 179);
+      } else {
+        big.fill(0);
+      }
+      big.text(nf(i+count30,14), col2, b+i*spacing-spacing*5);
+    }
+    if (i>=10 && i<15) {
+      if (childrenC[i+count30].getFloat("happy") == 0.0) {
+        big.fill(179, 179, 179);
+      } else {
+        big.fill(0);
+      }
+      big.text(nf(i+count30,14), col3, b+i*spacing-spacing*10);
+    }
+    if (i>=15 && i<20) {
+      if (childrenC[i+count30].getFloat("happy") == 0.0) {
+        big.fill(179, 179, 179);
+      } else {
+        big.fill(0);
+      }
+      big.text(nf(i+count30,14), col4, b+i*spacing-spacing*15);
+    }
+    if (i>=20 && i<25) {
+      if (childrenC[i+count30].getFloat("happy") == 0.0) {
+        big.fill(179, 179, 179);
+      } else {
+        big.fill(0);
+      }
+      big.text(nf(i+count30,14), col5, b+i*spacing-spacing*20);
+    }
+    if (i>=25 && i<30) {
+      if (childrenC[i+count30].getFloat("happy") == 0.0) {
+        big.fill(179, 179, 179);
+      } else {
+        big.fill(0);
+      }
+      big.text(nf(i+count30,14), col6, b+i*spacing-spacing*25);
+    }
+  }
 }
 
 void keyPressed(){
