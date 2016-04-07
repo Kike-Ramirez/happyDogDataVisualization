@@ -14,7 +14,7 @@ float smoothaDC,smoothaFmin,smoothaFmax,smoothaVmax,smoothgDC,smoothgFmin,smooth
 float smoothAvgaDC,smoothAvgaFmin,smoothAvgaFmax,smoothAvgaVmax,smoothAvggDC,smoothAvggFmin,smoothAvggFmax,smoothAvggVmax,smoothAvgmDC,smoothAvgmFmin,smoothAvgmFmax,smoothAvgmVmax,smoothAvgeDC,smoothAvgeFmin,smoothAvgeFmax,smoothAvgeVmax;
 float smoothM,smoothM2;
 PFont walReg,walBold, incReg, incBold;
-int count256, countAvg, count0_255, count30;
+int count256, countAvg, count0_255, count30, countID;
 
 void setup() {
   /* SETUP + BACKGROUND */
@@ -62,8 +62,8 @@ void setup() {
   smoothM2 = 918.205;
 
   /* UNCOMMENT TO START AT LATER SAMPLES */
-  // pos = 13030;
-  // count256 = int(pos/256);
+   pos = 1000;
+   count256 = int(pos/256);
 }
 
 void draw() {
@@ -84,6 +84,10 @@ void draw() {
   if (pos%256 == 0) {
     /* SUBCOUNTER EVERY 256 SAMPLES */
     count256++;
+    /* SUBCOUNTER FOR ID LIST */
+    if (pos>1280) {
+      countID++;
+    }
     /* ASSIGN COOKED DATA */
     aDC = childrenC[pos/256-1].getFloat("aDC");
     aFmin = childrenC[pos/256-1].getFloat("aFmin");
@@ -215,47 +219,48 @@ void draw() {
   float rectH = 58.405;  
   float rectSpacing = 77.873;
   float rectStrokeWeight = 6;
+  float rectRounding = 30;
 
   /* AVERAGE BARS BEFORE BARS */
   big.stroke(0);
   big.strokeWeight(rectStrokeWeight);
-  big.fill(255,0,0);
-  big.rect(rectX + 3, rectY1 + 0 * rectSpacing + 3, smoothAvgaDC - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY1 + 1 * rectSpacing + 3, smoothAvgaFmin - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY1 + 2 * rectSpacing + 3, smoothAvgaFmax - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY1 + 3 * rectSpacing + 3, smoothAvgaVmax - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY2 + 0 * rectSpacing + 3, smoothAvggDC - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY2 + 1 * rectSpacing + 3, smoothAvggFmin - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY2 + 2 * rectSpacing + 3, smoothAvggFmax - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY2 + 3 * rectSpacing + 3, smoothAvggVmax - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY3 + 0 * rectSpacing + 3, smoothAvgmDC - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY3 + 1 * rectSpacing + 3, smoothAvgmFmin - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY3 + 2 * rectSpacing + 3, smoothAvgmFmax - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY3 + 3 * rectSpacing + 3, smoothAvgmVmax - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY4 + 0 * rectSpacing + 3, smoothAvgeDC - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY4 + 1 * rectSpacing + 3, smoothAvgeFmin - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY4 + 2 * rectSpacing + 3, smoothAvgeFmax - 3, rectH - 6, 0, 20, 20, 0);
-  big.rect(rectX + 3, rectY4 + 3 * rectSpacing + 3, smoothAvgeVmax - 3, rectH - 6, 0, 20, 20, 0);
+  big.noFill();
+  big.rect(rectX + 3, rectY1 + 0 * rectSpacing + 3, smoothAvgaDC - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY1 + 1 * rectSpacing + 3, smoothAvgaFmin - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY1 + 2 * rectSpacing + 3, smoothAvgaFmax - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY1 + 3 * rectSpacing + 3, smoothAvgaVmax - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY2 + 0 * rectSpacing + 3, smoothAvggDC - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY2 + 1 * rectSpacing + 3, smoothAvggFmin - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY2 + 2 * rectSpacing + 3, smoothAvggFmax - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY2 + 3 * rectSpacing + 3, smoothAvggVmax - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY3 + 0 * rectSpacing + 3, smoothAvgmDC - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY3 + 1 * rectSpacing + 3, smoothAvgmFmin - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY3 + 2 * rectSpacing + 3, smoothAvgmFmax - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY3 + 3 * rectSpacing + 3, smoothAvgmVmax - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY4 + 0 * rectSpacing + 3, smoothAvgeDC - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY4 + 1 * rectSpacing + 3, smoothAvgeFmin - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY4 + 2 * rectSpacing + 3, smoothAvgeFmax - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX + 3, rectY4 + 3 * rectSpacing + 3, smoothAvgeVmax - 3, rectH - 6, 0, rectRounding, rectRounding, 0);
 
   /* BARS */
   big.noStroke();
   big.fill(0);
-  big.rect(rectX, rectY1 + 0 * rectSpacing, smoothaDC, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY1 + 1 * rectSpacing, smoothaFmin, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY1 + 2 * rectSpacing, smoothaFmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY1 + 3 * rectSpacing, smoothaVmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY2 + 0 * rectSpacing, smoothgDC, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY2 + 1 * rectSpacing, smoothgFmin, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY2 + 2 * rectSpacing, smoothgFmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY2 + 3 * rectSpacing, smoothgVmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY3 + 0 * rectSpacing, smoothmDC, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY3 + 1 * rectSpacing, smoothmFmin, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY3 + 2 * rectSpacing, smoothmFmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY3 + 3 * rectSpacing, smoothmVmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY4 + 0 * rectSpacing, smootheDC, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY4 + 1 * rectSpacing, smootheFmin, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY4 + 2 * rectSpacing, smootheFmax, rectH, 0, 20, 20, 0);
-  big.rect(rectX, rectY4 + 3 * rectSpacing, smootheVmax, rectH, 0, 20, 20, 0);
+  big.rect(rectX, rectY1 + 0 * rectSpacing, smoothaDC, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY1 + 1 * rectSpacing, smoothaFmin, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY1 + 2 * rectSpacing, smoothaFmax, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY1 + 3 * rectSpacing, smoothaVmax, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY2 + 0 * rectSpacing, smoothgDC, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY2 + 1 * rectSpacing, smoothgFmin, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY2 + 2 * rectSpacing, smoothgFmax, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY2 + 3 * rectSpacing, smoothgVmax, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY3 + 0 * rectSpacing, smoothmDC, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY3 + 1 * rectSpacing, smoothmFmin, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY3 + 2 * rectSpacing, smoothmFmax, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY3 + 3 * rectSpacing, smoothmVmax, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY4 + 0 * rectSpacing, smootheDC, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY4 + 1 * rectSpacing, smootheFmin, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY4 + 2 * rectSpacing, smootheFmax, rectH, 0, rectRounding, rectRounding, 0);
+  big.rect(rectX, rectY4 + 3 * rectSpacing, smootheVmax, rectH, 0, rectRounding, rectRounding, 0);
 
   /* ASSIGN COOKED DATA (used for tail and sample counter) */
   XML[] childrenR = xmlRaw.getChildren("Measure");
@@ -449,11 +454,6 @@ void textDraw() {
   /* ID */
   big.textFont(incBold,24);
   big.text(nf(pos/256,14),918.343, 3072.907+6);
-
-  /* SUBCOUNTER PREVENTING OVERFLOW ID LIST */
-  if (count256 > 30) {
-    count30 = count256-30;
-  }
   
   /* ID LIST */
   float col1 = 516.045;
@@ -468,52 +468,101 @@ void textDraw() {
 
   for (int i = 0; i < count256; ++i) {
     if (i<5) {
-      if (childrenC[i+count30].getFloat("happy") == 0.0) {
+      if (childrenC[i+countID].getFloat("happy") == 0.0) {
         big.fill(179, 179, 179);
       } else {
         big.fill(0);
       }
-      big.text(nf(i+count30,14), col1, b+i*spacing);
+      if (count256<5) {
+        big.text(nf(i,14), col1, b-(i-count256)*spacing-spacing);
+      } else {
+        big.text(nf(i+countID,14), col1, b-(i-5)*spacing-spacing);
+      }
     } 
     if (i>=5 && i<10) {
-      if (childrenC[i+count30].getFloat("happy") == 0.0) {
-        big.fill(179, 179, 179);
+      if (count256<10) {
+        if (childrenC[i-5].getFloat("happy") == 0.0) {
+          big.fill(179, 179, 179);
+        } else {
+          big.fill(0);
+        }
+        big.text(nf(i-5,14), col2, b-(i-count256)*spacing-spacing);
       } else {
-        big.fill(0);
+        if (childrenC[i-10+countID].getFloat("happy") == 0.0) {
+          big.fill(179, 179, 179);
+        } else {
+          big.fill(0);
+        }
+        big.text(nf(i-10+countID,14), col2, b-(i-10)*spacing-spacing);
       }
-      big.text(nf(i+count30,14), col2, b+i*spacing-spacing*5);
     }
     if (i>=10 && i<15) {
-      if (childrenC[i+count30].getFloat("happy") == 0.0) {
-        big.fill(179, 179, 179);
+      if (count256<15) {
+        if (childrenC[i-10].getFloat("happy") == 0.0) {
+          big.fill(179, 179, 179);
+        } else {
+          big.fill(0);
+        }
+        big.text(nf(i-10,14), col3, b-(i-count256)*spacing-spacing);
       } else {
-        big.fill(0);
+        if (childrenC[i-20+countID].getFloat("happy") == 0.0) {
+          big.fill(179, 179, 179);
+        } else {
+          big.fill(0);
+        }
+        big.text(nf(i-20+countID,14), col3, b-(i-15)*spacing-spacing);
       }
-      big.text(nf(i+count30,14), col3, b+i*spacing-spacing*10);
     }
     if (i>=15 && i<20) {
-      if (childrenC[i+count30].getFloat("happy") == 0.0) {
-        big.fill(179, 179, 179);
+      if (count256<20) {
+        if (childrenC[i-15].getFloat("happy") == 0.0) {
+          big.fill(179, 179, 179);
+        } else {
+          big.fill(0);
+        }
+        big.text(nf(i-15,14), col4, b-(i-count256)*spacing-spacing);
       } else {
-        big.fill(0);
+        if (childrenC[i-30+countID].getFloat("happy") == 0.0) {
+          big.fill(179, 179, 179);
+        } else {
+          big.fill(0);
+        }
+        big.text(nf(i-30+countID,14), col4, b-(i-20)*spacing-spacing);
       }
-      big.text(nf(i+count30,14), col4, b+i*spacing-spacing*15);
     }
     if (i>=20 && i<25) {
-      if (childrenC[i+count30].getFloat("happy") == 0.0) {
-        big.fill(179, 179, 179);
+      if (count256<25) {
+        if (childrenC[i-20].getFloat("happy") == 0.0) {
+          big.fill(179, 179, 179);
+        } else {
+          big.fill(0);
+        }
+        big.text(nf(i-20,14), col5, b-(i-count256)*spacing-spacing);
       } else {
-        big.fill(0);
+        if (childrenC[i-40+countID].getFloat("happy") == 0.0) {
+          big.fill(179, 179, 179);
+        } else {
+          big.fill(0);
+        }
+        big.text(nf(i-40+countID,14), col5, b-(i-25)*spacing-spacing);
       }
-      big.text(nf(i+count30,14), col5, b+i*spacing-spacing*20);
     }
     if (i>=25 && i<30) {
-      if (childrenC[i+count30].getFloat("happy") == 0.0) {
-        big.fill(179, 179, 179);
+      if (count256<30) {
+        if (childrenC[i-25].getFloat("happy") == 0.0) {
+          big.fill(179, 179, 179);
+        } else {
+          big.fill(0);
+        }
+        big.text(nf(i-25,14), col6, b-(i-count256)*spacing-spacing);
       } else {
-        big.fill(0);
+        if (childrenC[i-50+countID].getFloat("happy") == 0.0) {
+          big.fill(179, 179, 179);
+        } else {
+          big.fill(0);
+        }
+        big.text(nf(i-50+countID,14), col6, b-(i-30)*spacing-spacing);
       }
-      big.text(nf(i+count30,14), col6, b+i*spacing-spacing*25);
     }
   }
 }
