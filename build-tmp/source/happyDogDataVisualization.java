@@ -14,10 +14,11 @@ import java.io.IOException;
 
 public class happyDogDataVisualization extends PApplet {
 
+//-------------------------- GLOBAL VARIABLES --------------------------//
 XML xmlRaw, xmlCooked;
 XML[] childrenR, childrenC;
 PGraphics big;
-PImage bg;
+PImage bg, img;
 int pos, count256, countAvg, count0_255, countID;
 float happyC, scale;
 Tail tail;
@@ -26,18 +27,24 @@ Bars bars;
 Happy happy;
 Text txt;
 
+//-------------------------- SETUP --------------------------//
 public void setup() {
-  scale = 2;
+  //~~~ SCALE ~~~//
+  scale = 0.25f;
 
+  //~~~ SIZE & BACKGROUND ~~~//
   
   big = createGraphics(PApplet.parseInt(2160*scale),PApplet.parseInt(3840*scale));
-  bg = loadImage("perrito4.png");
+  //if scale = 2 perrito_x2.png & if scale 0,25 perrito_x0,25.png
+  bg = loadImage("perrito_x0,25.png");
 
+  //~~~ LOAD XML ~~~//
   xmlRaw = loadXML("raw_final.xml");
   xmlCooked = loadXML("cooked_final.xml");
   childrenR = xmlRaw.getChildren("Measure");
   childrenC = xmlCooked.getChildren("measure");
   
+  //~~~ PARTS ~~~//
   //Tail(startX, topY, bottomY, minX, maxX, weightLine, radiusBigCircle, colFillBigCircle, colStroke, colHalfCircle)
   tail = new Tail(918.5f*scale, 401*scale, 925*scale, 447.746f*scale, 1388.663f*scale, 5*scale, 110.464f*scale, 0xffFFFBF2, color(0), color(255,0,0));
   //Samples(startX, startY, spacingX, spacingY, radius, weightStroke, colCircles, colInsideCircles, colCrosses)
@@ -48,25 +55,33 @@ public void setup() {
   happy = new Happy(1124.29f*scale, 3073.26f*scale, 21.287f*scale, 1422.966f*scale, 3034.104f*scale, 380.358f*scale, 1613.146f*scale, 3227.794f*scale, 30*scale, color(255,0,0), 0xffffbcb5, color(255,0,0));
   txt = new Text();
   
+  //~~~ PARTS THAT NEED SETUP ~~~//
   bars.setup();
   txt.setup();
 
-  pos = 900;
-  count256 = PApplet.parseInt(pos/256);
-  //countID = int(pos/256)-5;
+  //~~~ UNCOMMENT TO START AT FURTHER SAMPLE (just edit pos) ~~~//
+   //pos = 900;
+  // count256 = int(pos/256);
+  // if (pos>1280) {
+  //   countID = int(pos/256)-5;
+  // }
 }
 
+//-------------------------- DRAW --------------------------//
 public void draw() {
+  //~~~ MAIN COUNTER, POS = SAMPLE NUMBER ~~~//
   pos++;
 
-  if(pos%10 == 0) {  
-   PImage img = big.get(0, 0, big.width, big.height);  
+  //~~~ RENDER ON SMALLER SCREEN ~~~//
+  if(pos%2 == 0) {  
+   img = big.get(0, 0, big.width, big.height);  
    img.resize(width,height);
    image(img,0,0);
   }  
 
-  happyC = childrenC[pos/256-1].getFloat("happy");
+  //~~~ SUBCOUNTERS & HAPPY COOKED STORED FOR GLOBAL USE ~~~//
   if (pos%256 == 0) {
+    happyC = childrenC[pos/256-1].getFloat("happy");
     count256++;
     if (pos>1280) {
       countID++;
@@ -74,6 +89,7 @@ public void draw() {
   }
   count0_255 = pos-256*count256;
 
+  //~~~ DRAW ON PGRAPHICS ~~~//
   big.beginDraw();
     big.background(bg);
     tail.draw();
@@ -81,12 +97,15 @@ public void draw() {
     bars.draw();
     happy.draw();
     txt.assignRawData();
-    txt.drawTextRawData(505.097f*scale, 1098.563f*scale, 709.885f*scale, 1068.918f*scale, 1392.175f*scale, 1718.025f*scale, 2036.524f*scale, 2356.194f*scale, 14.6f*scale, 10*scale, 12*scale, color(255,0,0));
+    txt.drawTextRawData(503.191f*scale, 1059.28f*scale, 708.946f*scale, 1042.875f*scale, 1364.156f*scale, 1685.798f*scale, 2006.417f*scale, 2327.459f*scale, 14.6f*scale, 10*scale, 12*scale, color(255,0,0));
     txt.drawtextID(918.342f*scale, 3078.907f*scale, 24*scale, color(255, 0, 0));
     txt.drawtextIDList(516.045f*scale, 3230.353f*scale, 161.965f*scale, 14.602f*scale, 13*scale, color(255,0,0), 0xffffc9c2);
   big.endDraw();
-  big.save("save"+pos+".png");
+
+  //~~~ UNCOMMENT TO RENDER ~~~//
+  //big.save("save" + pos + ".png");
 }
+//-------------------------- BARS CLASS --------------------------//
 class Bars {
 
 	float x,y1,y2,y3,y4,h,s,w,r,maxVal;
@@ -100,6 +119,7 @@ class Bars {
 	float smoothaDC,smoothaFmin,smoothaFmax,smoothaVmax,smoothgDC,smoothgFmin,smoothgFmax,smoothgVmax,smoothmDC,smoothmFmin,smoothmFmax,smoothmVmax,smootheDC,smootheFmin,smootheFmax,smootheVmax;
 	float smoothAvgaDC,smoothAvgaFmin,smoothAvgaFmax,smoothAvgaVmax,smoothAvggDC,smoothAvggFmin,smoothAvggFmax,smoothAvggVmax,smoothAvgmDC,smoothAvgmFmin,smoothAvgmFmax,smoothAvgmVmax,smoothAvgeDC,smoothAvgeFmin,smoothAvgeFmax,smoothAvgeVmax;
 
+	//~~~ CONSTRUCTOR ~~~//
 	public Bars (float posX, float posY1, float posY2, float posY3, float posY4, float rectHeight, float spacing, float weightStroke, float rounding, float maxValue, int colNormal, int colAvg) {
 		x = posX;
 		y1 = posY1;
@@ -115,19 +135,24 @@ class Bars {
 		cA = colAvg;
 	}
 
+	//~~~ SETUP ~~~//
 	public void setup() {
 		initialiseLists();
 		fillList();
 	}
 
+	//~~~ DRAW ~~~//
 	public void draw() {
-		assignCookedData();
-		normaliseCookedData();
-		if (happyC == 1.0f) {
-			countAvg++;
-			sumAvg();
-			normaliseAvgCookedData();
+		if (pos%256 == 0) {
+			assignCookedData();
+			normaliseCookedData();
+			if (happyC == 1.0f) {
+				countAvg++;
+				sumAvg();
+				normaliseAvgCookedData();
+			}
 		}
+
 		smoothCookedData();
 		smoothAvgCookedData();
 
@@ -135,6 +160,7 @@ class Bars {
 		drawNormalData();
 	}
 
+	//~~~ INITIALISE LISTS ~~~//
 	public void initialiseLists() {
 		aDCList = new FloatList();
 		aFminList = new FloatList();
@@ -154,6 +180,7 @@ class Bars {
 		eVmaxList = new FloatList();
 	}
 
+	//~~~ FILL LISTS ~~~//
 	public void fillList() {
 	  	for (int i = 0; i < childrenC.length; i++) {
 		    aDCList.append(childrenC[i].getFloat("aDC"));
@@ -175,6 +202,7 @@ class Bars {
 	  }
 	}
 
+	//~~~ ASSIGN COOKED DATA ~~~//
 	public void assignCookedData() {
 		aDC = childrenC[pos/256-1].getFloat("aDC");
 	    aFmin = childrenC[pos/256-1].getFloat("aFmin");
@@ -194,25 +222,27 @@ class Bars {
 	    eVmax = childrenC[pos/256-1].getFloat("eVmax");
 	}
 
+	//~~~ NORMALISE COOKED DATA ~~~//
 	public void normaliseCookedData() {
-		normaDC = map(aDC, aDCList.min(), aDCList.max(), 0, maxVal);
-	    normaFmin = map(aFmin, aFminList.min(), aFminList.max(), 0, maxVal);
-	    normaFmax = map(aFmax, aFmaxList.min(), aFmaxList.max(), 0, maxVal);
-	    normaVmax = map(aVmax, aVmaxList.min(), aVmaxList.max(), 0, maxVal);
-	    normgDC = map(gDC, gDCList.min(), gDCList.max(), 0, maxVal);
-	    normgFmin = map(gFmin, gFminList.min(), gFminList.max(), 0, maxVal);
-	    normgFmax = map(gFmax, gFmaxList.min(), gFmaxList.max(), 0, maxVal);
-	    normgVmax = map(gVmax, gVmaxList.min(), gVmaxList.max(), 0, maxVal);
-	    normmDC = map(mDC, mDCList.min(), mDCList.max(), 0, maxVal);
-	    normmFmin = map(mFmin, mFminList.min(), mFminList.max(), 0, maxVal);
-	    normmFmax = map(mFmax, mFmaxList.min(), mFmaxList.max(), 0, maxVal);
-	    normmVmax = map(mVmax, mVmaxList.min(), mVmaxList.max(), 0, maxVal);
-	    normeDC = map(eDC, eDCList.min(), eDCList.max(), 0, maxVal);
-	    normeFmin = map(eFmin, eFminList.min(), eFminList.max(), 0, maxVal);
-	    normeFmax = map(eFmax, eFmaxList.min(), eFmaxList.max(), 0, maxVal);
-	    normeVmax = map(eVmax, eVmaxList.min(), eVmaxList.max(), 0, maxVal);
+		normaDC = map(aDC, aDCList.min(), aDCList.max(), w*2, maxVal);
+	    normaFmin = map(aFmin, aFminList.min(), aFminList.max(), w*2, maxVal);
+	    normaFmax = map(aFmax, aFmaxList.min(), aFmaxList.max(), w*2, maxVal);
+	    normaVmax = map(aVmax, aVmaxList.min(), aVmaxList.max(), w*2, maxVal);
+	    normgDC = map(gDC, gDCList.min(), gDCList.max(), w*2, maxVal);
+	    normgFmin = map(gFmin, gFminList.min(), gFminList.max(), w*2, maxVal);
+	    normgFmax = map(gFmax, gFmaxList.min(), gFmaxList.max(), w*2, maxVal);
+	    normgVmax = map(gVmax, gVmaxList.min(), gVmaxList.max(), w*2, maxVal);
+	    normmDC = map(mDC, mDCList.min(), mDCList.max(), w*2, maxVal);
+	    normmFmin = map(mFmin, mFminList.min(), mFminList.max(), w*2, maxVal);
+	    normmFmax = map(mFmax, mFmaxList.min(), mFmaxList.max(), w*2, maxVal);
+	    normmVmax = map(mVmax, mVmaxList.min(), mVmaxList.max(), w*2, maxVal);
+	    normeDC = map(eDC, eDCList.min(), eDCList.max(), w*2, maxVal);
+	    normeFmin = map(eFmin, eFminList.min(), eFminList.max(), w*2, maxVal);
+	    normeFmax = map(eFmax, eFmaxList.min(), eFmaxList.max(), w*2, maxVal);
+	    normeVmax = map(eVmax, eVmaxList.min(), eVmaxList.max(), w*2, maxVal);
 	}
 
+	//~~~ SUM FUNCTION ~~~//
 	public void sumAvg() {
 		sumaDC = sumaDC + aDC;
 	    sumaFmin = sumaFmin + aFmin;
@@ -232,25 +262,27 @@ class Bars {
 	    sumeVmax = sumeVmax + eVmax;
 	}
 
+	//~~~ NORMALISE AVERAGE COOKED DATA ~~~//
 	public void normaliseAvgCookedData() {
-	    normAvgaDC = map(sumaDC/countAvg, aDCList.min(), aDCList.max(), 0, maxVal); 
-	    normAvgaFmin = map(sumaFmin/countAvg, aFminList.min(), aFminList.max(), 0, maxVal);
-	    normAvgaFmax = map(sumaFmax/countAvg, aFmaxList.min(), aFmaxList.max(), 0, maxVal);
-	    normAvgaVmax = map(sumaVmax/countAvg, aVmaxList.min(), aVmaxList.max(), 0, maxVal);
-	    normAvggDC = map(sumgDC/countAvg, gDCList.min(), gDCList.max(), 0, maxVal);
-	    normAvggFmin = map(sumgFmin/countAvg, gFminList.min(), gFminList.max(), 0, maxVal);
-	    normAvggFmax = map(sumgFmax/countAvg, gFmaxList.min(), gFmaxList.max(), 0, maxVal);
-	    normAvggVmax = map(sumgVmax/countAvg, gVmaxList.min(), gVmaxList.max(), 0, maxVal);
-	    normAvgmDC = map(summDC/countAvg, mDCList.min(), mDCList.max(), 0, maxVal);
-	    normAvgmFmin = map(summFmin/countAvg, mFminList.min(), mFminList.max(), 0, maxVal);
-	    normAvgmFmax = map(summFmax/countAvg, mFmaxList.min(), mFmaxList.max(), 0, maxVal);
-	    normAvgmVmax = map(summVmax/countAvg, mVmaxList.min(), mVmaxList.max(), 0, maxVal);
-	    normAvgeDC = map(sumeDC/countAvg, eDCList.min(), eDCList.max(), 0, maxVal);
-	    normAvgeFmin = map(sumeFmin/countAvg, eFminList.min(), eFminList.max(), 0, maxVal);
-	    normAvgeFmax = map(sumeFmax/countAvg, eFmaxList.min(), eFmaxList.max(), 0, maxVal);
-	    normAvgeVmax = map(sumeVmax/countAvg, eVmaxList.min(), eVmaxList.max(), 0, maxVal);	
+	    normAvgaDC = map(sumaDC/countAvg, aDCList.min(), aDCList.max(), w*2, maxVal); 
+	    normAvgaFmin = map(sumaFmin/countAvg, aFminList.min(), aFminList.max(), w*2, maxVal);
+	    normAvgaFmax = map(sumaFmax/countAvg, aFmaxList.min(), aFmaxList.max(), w*2, maxVal);
+	    normAvgaVmax = map(sumaVmax/countAvg, aVmaxList.min(), aVmaxList.max(), w*2, maxVal);
+	    normAvggDC = map(sumgDC/countAvg, gDCList.min(), gDCList.max(), w*2, maxVal);
+	    normAvggFmin = map(sumgFmin/countAvg, gFminList.min(), gFminList.max(), w*2, maxVal);
+	    normAvggFmax = map(sumgFmax/countAvg, gFmaxList.min(), gFmaxList.max(), w*2, maxVal);
+	    normAvggVmax = map(sumgVmax/countAvg, gVmaxList.min(), gVmaxList.max(), w*2, maxVal);
+	    normAvgmDC = map(summDC/countAvg, mDCList.min(), mDCList.max(), w*2, maxVal);
+	    normAvgmFmin = map(summFmin/countAvg, mFminList.min(), mFminList.max(), w*2, maxVal);
+	    normAvgmFmax = map(summFmax/countAvg, mFmaxList.min(), mFmaxList.max(), w*2, maxVal);
+	    normAvgmVmax = map(summVmax/countAvg, mVmaxList.min(), mVmaxList.max(), w*2, maxVal);
+	    normAvgeDC = map(sumeDC/countAvg, eDCList.min(), eDCList.max(), w*2, maxVal);
+	    normAvgeFmin = map(sumeFmin/countAvg, eFminList.min(), eFminList.max(), w*2, maxVal);
+	    normAvgeFmax = map(sumeFmax/countAvg, eFmaxList.min(), eFmaxList.max(), w*2, maxVal);
+	    normAvgeVmax = map(sumeVmax/countAvg, eVmaxList.min(), eVmaxList.max(), w*2, maxVal);	
 	}
 
+	//~~~ LINEAR INTERPOLATION COOKED DATA ~~~//
 	public void smoothCookedData() {
 		float amt = 0.05f;
 		smoothaDC = lerp(smoothaDC, normaDC, amt);
@@ -271,6 +303,7 @@ class Bars {
 		smootheVmax = lerp(smootheVmax, normeVmax, amt);
 	}
 
+	//~~~ LINEAR INTERPOLATION AVERAGE COOKED DATA ~~~//
 	public void smoothAvgCookedData(){
 		float amt = 0.05f;
 		smoothAvgaDC = lerp(smoothAvgaDC, normAvgaDC, amt);
@@ -336,12 +369,14 @@ class Bars {
 	}
 
 }
+//-------------------------- HAPPY CLASS --------------------------//
 class Happy {
 
 	PFont walReg;
 	float cX, cY, cR, bX, bY, bS, tX, tY, tS;
 	int cC, bC, tC;
 
+	//~~~ CONSTRUCTOR ~~~//
 	public Happy (float circleX, float circleY, float circleRadius, float bgX, float bgY, float bgSize, float txtX, float txtY, float txtSize, int circleCol, int bgCol, int txtCol) {
 		cX = circleX; 
 		cY = circleY; 
@@ -357,12 +392,14 @@ class Happy {
 		tC = txtCol;
 	}
 
+	//~~~ DRAW ~~~//
 	public void draw() {
 		drawCircleHappy();
 		drawHappyBg();
 		drawTextHappy();	
 	}
 
+	//~~~ DRAW CIRCLE HAPPY ~~~//
 	public void drawCircleHappy() {
 		if (happyC == 1.0f) {
 			big.noStroke();
@@ -371,6 +408,7 @@ class Happy {
 		}
 	}
 
+	//~~~ DRAW BACKGROUND HAPPY ~~~//
 	public void drawHappyBg() {
 		if (happyC == 1.0f) {
 			big.noStroke();
@@ -379,24 +417,28 @@ class Happy {
 		}
 	}
 
+	//~~~ TEXT HAPPY OR NOT HAPPY ~~~//
 	public void drawTextHappy(){
+		big.textAlign(CENTER);
 		walReg = createFont("gt-walsheim-regular-web.otf", 12);
 		big.fill(tC);
 		if (happyC == 1.0f) {
 			big.textFont(walReg, tS);
-		    big.text("HAPPY", tX, tY);
+		    big.text("H A P P Y", tX, tY);
 		} else {
 		    big.textFont(walReg, tS);
-		    big.text("NOT HAPPY", tX, tY);
+		    big.text("N O T   H A P P Y", tX, tY);
 		}
 	}
 
 }
+//-------------------------- SAMPLES CLASS --------------------------//
 class Samples {
 
 	float x, y, sX, sY, r, w;
 	int cCi, cICi, cCr;
 
+	//~~~ CONSTRUCTOR ~~~//
 	public Samples (float startX, float startY, float spacingX, float spacingY, float radius, float weightStroke, int colCircles, int colInsideCircles, int colCrosses) {
 		x = startX;
 		y = startY;
@@ -409,11 +451,13 @@ class Samples {
 		cCr = colCrosses;
 	}
 
+	//~~~ DRAW ~~~//
 	public void draw() {
 		drawCircles();
 		drawCrosses();
 	}
 
+	//~~~ DRAW CIRCLES ~~~//
 	public void drawCircles() {
 		for (int i = 0; i < count0_255; ++i) {
 			if (i<86) {
@@ -458,6 +502,7 @@ class Samples {
 		}
 	}
 
+	//~~~ DRAW CROSSES ~~~//
 	public void drawCrosses() {
 		big.stroke(cCr);
   		big.strokeWeight(w);
@@ -480,12 +525,14 @@ class Samples {
 	}
 
 }
+//-------------------------- TAIL CLASS --------------------------//
 class Tail {
 	
 	float x, yTop, yBot, xMin, xMax, w, r, gz, s1, s2, yCircle;
 	int cF, cS, cH;
 	FloatList gzList;
 
+	//~~~ CONSTRUCTOR ~~~//
 	public Tail (float startX, float topY, float bottomY, float minX, float maxX, float weightLine, float radiusBigCircle, int colFillBigCircle, int colStroke, int colHalfCircle) {
 		x = startX;
 		yTop = topY;
@@ -505,6 +552,7 @@ class Tail {
 		fillList();
 	}
 
+	//~~~ DRAW ~~~//
 	public void draw() {
   		gz = childrenR[pos].getFloat("gz");
 
@@ -519,6 +567,7 @@ class Tail {
 		drawSmallCircle();
 	}
 
+	//~~~ LINE TAIL ~~~//
 	public void drawLine() {
 		big.stroke(cS);
 		big.strokeWeight(w);
@@ -526,6 +575,7 @@ class Tail {
 		big.line(s1, yTop, x, yBot);
 	}
 
+	//~~~ BIG CIRCLE TAIL ~~~//
 	public void drawBigCircle() {
 		big.stroke(cS);
 		big.strokeWeight(w);
@@ -533,6 +583,7 @@ class Tail {
 		big.ellipse(s2, yCircle, r, r);
 	}
 
+	//~~~ SMALL CIRCLE TAIL ~~~//
 	public void drawSmallCircle() {
 		big.noStroke();
 		big.fill(cH);
@@ -544,28 +595,28 @@ class Tail {
 		big.ellipse(s2, yCircle, r/2, r/2);
 	}
 
+	//~~~ FILL LIST ~~~//
 	public void fillList() {
 	  	for (int i = 0; i < childrenR.length; i++) {
 	    	gzList.append(childrenR[i].getFloat("gz"));
 	  	}
 	}
 
+	//~~~ NORMALISE ~~~//
 	public float Normalise(float minVal, float maxVal) {
 		float normVal = map(gz, gzList.min(), gzList.max(), minVal, maxVal);
 		return normVal;
 	}
 
 }
+//-------------------------- TEXT CLASS --------------------------//
 class Text {
 
 	float number,ax,ay,az,gx,gy,gz,mx,my,mz,ex,ey,ez;
 	int happy;
 	PFont walReg, walBold, incReg, incBold;
 
-	public Text () {
-		
-	}
-
+	//~~~ SETUP FONTS ~~~//
 	public void setup() {
 		walReg = createFont("gt-walsheim-regular-web.otf", 12);
   		walBold = createFont("GT-Walsheim-Bold.ttf", 12);
@@ -573,6 +624,7 @@ class Text {
   		incBold = createFont("Inconsolata-Bold.ttf", 12);
 	}
 
+	//~~~ ASSIGN RAW DATA ~~~//
 	public void assignRawData() {
 		number = childrenR[pos].getInt("Number");
 	  	ax = childrenR[pos].getFloat("ax");
@@ -590,41 +642,45 @@ class Text {
 	  	happy = childrenR[pos].getInt("happy");
 	}
 
+	//~~~ FUNCTION DRAW SAMPLE COUNTER AND RAW DATA ~~~//
 	public void drawTextRawData(float sampleX, float sampleY, float startX, float axY, float gxY, float mxY, float exY, float happyY, float rawSpacingX, float txtSizeSample, float txtSizeRaw, int txtColor){
 		big.fill(txtColor);
 		big.pushMatrix();
 		big.rotate(radians(-90));
-		big.textAlign(CENTER);
+		big.textAlign(RIGHT);
 
 		big.textFont(walReg, txtSizeSample);
 		big.text(count0_255 + "      /      255",-sampleY, sampleX);
 
-		big.textFont(walReg, txtSizeRaw);
-		big.text("ax = " + String.format("%.2f", ax),-axY, startX);
-		big.text("ay = " + String.format("%.2f", ay),-axY, startX + rawSpacingX);
-		big.text("az = " + String.format("%.2f", az),-axY, startX + 2 * rawSpacingX);
-		big.text("gx = " + String.format("%.2f", gx),-gxY, startX);
-		big.text("gy = " + String.format("%.2f", gy),-gxY, startX + rawSpacingX);
-		big.text("gz = " + String.format("%.2f", gz),-gxY, startX + 2 * rawSpacingX);
-		big.text("mx = " + String.format("%.2f", mx),-mxY, startX);
-		big.text("my = " + String.format("%.2f", my),-mxY, startX + rawSpacingX);
-		big.text("mz = " + String.format("%.2f", mz),-mxY, startX + 2 * rawSpacingX);
-		big.text("ex = " + String.format("%.2f", ex),-exY, startX);
-		big.text("ey = " + String.format("%.2f", ey),-exY, startX + rawSpacingX);
-		big.text("ez = " + String.format("%.2f", ez),-exY, startX + 2 * rawSpacingX);
+		big.textFont(incReg, txtSizeRaw);
+		big.text("ax =   " + String.format("%.2f", ax),-axY, startX);
+		big.text("ay =   " + String.format("%.2f", ay),-axY, startX + rawSpacingX);
+		big.text("az =   " + String.format("%.2f", az),-axY, startX + 2 * rawSpacingX);
+		big.text("gx =   " + String.format("%.2f", gx),-gxY, startX);
+		big.text("gy =   " + String.format("%.2f", gy),-gxY, startX + rawSpacingX);
+		big.text("gz =   " + String.format("%.2f", gz),-gxY, startX + 2 * rawSpacingX);
+		big.text("mx =   " + String.format("%.2f", mx),-mxY, startX);
+		big.text("my =   " + String.format("%.2f", my),-mxY, startX + rawSpacingX);
+		big.text("mz =   " + String.format("%.2f", mz),-mxY, startX + 2 * rawSpacingX);
+		big.text("ex =   " + String.format("%.2f", ex),-exY, startX);
+		big.text("ey =   " + String.format("%.2f", ey),-exY, startX + rawSpacingX);
+		big.text("ez =   " + String.format("%.2f", ez),-exY, startX + 2 * rawSpacingX);
 		big.text("happy = " + happy,-happyY, startX + 2 * rawSpacingX);
 		big.popMatrix();
 		
 	}
 
+	//~~~ FUNCTION DRAW CURRENT ID ~~~//
 	public void drawtextID(float x, float y, float txtSize, int txtColor){
+		big.textAlign(CENTER);
 		big.fill(txtColor);
 		big.textFont(incBold, txtSize);
   		big.text(nf(pos/256,14), x, y);
 	}
 
+	//~~~ FUNCTION DRAW ID LIST WITH PREVIOUS ID'S AND IF WAS HAPPY OR NOT ~~~//
 	public void drawtextIDList(float startX, float startY, float spacingX, float spacingY, float txtSize, int happyCol, int sadCol){
-	  
+	  big.textAlign(CENTER);
 	  big.textFont(incReg, txtSize);
 
 	  for (int i = 0; i < count256; ++i) {

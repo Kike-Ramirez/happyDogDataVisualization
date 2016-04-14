@@ -1,9 +1,11 @@
+//-------------------------- TAIL CLASS --------------------------//
 class Tail {
 	
 	float x, yTop, yBot, xMin, xMax, w, r, gz, s1, s2, yCircle;
 	color cF, cS, cH;
 	FloatList gzList;
 
+	//~~~ CONSTRUCTOR ~~~//
 	public Tail (float startX, float topY, float bottomY, float minX, float maxX, float weightLine, float radiusBigCircle, color colFillBigCircle, color colStroke, color colHalfCircle) {
 		x = startX;
 		yTop = topY;
@@ -23,6 +25,7 @@ class Tail {
 		fillList();
 	}
 
+	//~~~ DRAW ~~~//
 	void draw() {
   		gz = childrenR[pos].getFloat("gz");
 
@@ -37,6 +40,7 @@ class Tail {
 		drawSmallCircle();
 	}
 
+	//~~~ LINE TAIL ~~~//
 	void drawLine() {
 		big.stroke(cS);
 		big.strokeWeight(w);
@@ -44,6 +48,7 @@ class Tail {
 		big.line(s1, yTop, x, yBot);
 	}
 
+	//~~~ BIG CIRCLE TAIL ~~~//
 	void drawBigCircle() {
 		big.stroke(cS);
 		big.strokeWeight(w);
@@ -51,6 +56,7 @@ class Tail {
 		big.ellipse(s2, yCircle, r, r);
 	}
 
+	//~~~ SMALL CIRCLE TAIL ~~~//
 	void drawSmallCircle() {
 		big.noStroke();
 		big.fill(cH);
@@ -62,12 +68,14 @@ class Tail {
 		big.ellipse(s2, yCircle, r/2, r/2);
 	}
 
+	//~~~ FILL LIST ~~~//
 	void fillList() {
 	  	for (int i = 0; i < childrenR.length; i++) {
 	    	gzList.append(childrenR[i].getFloat("gz"));
 	  	}
 	}
 
+	//~~~ NORMALISE ~~~//
 	float Normalise(float minVal, float maxVal) {
 		float normVal = map(gz, gzList.min(), gzList.max(), minVal, maxVal);
 		return normVal;

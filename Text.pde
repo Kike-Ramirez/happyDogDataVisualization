@@ -1,13 +1,11 @@
+//-------------------------- TEXT CLASS --------------------------//
 class Text {
 
 	float number,ax,ay,az,gx,gy,gz,mx,my,mz,ex,ey,ez;
 	int happy;
 	PFont walReg, walBold, incReg, incBold;
 
-	public Text () {
-		
-	}
-
+	//~~~ SETUP FONTS ~~~//
 	void setup() {
 		walReg = createFont("gt-walsheim-regular-web.otf", 12);
   		walBold = createFont("GT-Walsheim-Bold.ttf", 12);
@@ -15,6 +13,7 @@ class Text {
   		incBold = createFont("Inconsolata-Bold.ttf", 12);
 	}
 
+	//~~~ ASSIGN RAW DATA ~~~//
 	void assignRawData() {
 		number = childrenR[pos].getInt("Number");
 	  	ax = childrenR[pos].getFloat("ax");
@@ -32,41 +31,45 @@ class Text {
 	  	happy = childrenR[pos].getInt("happy");
 	}
 
+	//~~~ FUNCTION DRAW SAMPLE COUNTER AND RAW DATA ~~~//
 	void drawTextRawData(float sampleX, float sampleY, float startX, float axY, float gxY, float mxY, float exY, float happyY, float rawSpacingX, float txtSizeSample, float txtSizeRaw, color txtColor){
 		big.fill(txtColor);
 		big.pushMatrix();
 		big.rotate(radians(-90));
-		big.textAlign(CENTER);
+		big.textAlign(RIGHT);
 
 		big.textFont(walReg, txtSizeSample);
 		big.text(count0_255 + "      /      255",-sampleY, sampleX);
 
-		big.textFont(walReg, txtSizeRaw);
-		big.text("ax = " + String.format("%.2f", ax),-axY, startX);
-		big.text("ay = " + String.format("%.2f", ay),-axY, startX + rawSpacingX);
-		big.text("az = " + String.format("%.2f", az),-axY, startX + 2 * rawSpacingX);
-		big.text("gx = " + String.format("%.2f", gx),-gxY, startX);
-		big.text("gy = " + String.format("%.2f", gy),-gxY, startX + rawSpacingX);
-		big.text("gz = " + String.format("%.2f", gz),-gxY, startX + 2 * rawSpacingX);
-		big.text("mx = " + String.format("%.2f", mx),-mxY, startX);
-		big.text("my = " + String.format("%.2f", my),-mxY, startX + rawSpacingX);
-		big.text("mz = " + String.format("%.2f", mz),-mxY, startX + 2 * rawSpacingX);
-		big.text("ex = " + String.format("%.2f", ex),-exY, startX);
-		big.text("ey = " + String.format("%.2f", ey),-exY, startX + rawSpacingX);
-		big.text("ez = " + String.format("%.2f", ez),-exY, startX + 2 * rawSpacingX);
+		big.textFont(incReg, txtSizeRaw);
+		big.text("ax =   " + String.format("%.2f", ax),-axY, startX);
+		big.text("ay =   " + String.format("%.2f", ay),-axY, startX + rawSpacingX);
+		big.text("az =   " + String.format("%.2f", az),-axY, startX + 2 * rawSpacingX);
+		big.text("gx =   " + String.format("%.2f", gx),-gxY, startX);
+		big.text("gy =   " + String.format("%.2f", gy),-gxY, startX + rawSpacingX);
+		big.text("gz =   " + String.format("%.2f", gz),-gxY, startX + 2 * rawSpacingX);
+		big.text("mx =   " + String.format("%.2f", mx),-mxY, startX);
+		big.text("my =   " + String.format("%.2f", my),-mxY, startX + rawSpacingX);
+		big.text("mz =   " + String.format("%.2f", mz),-mxY, startX + 2 * rawSpacingX);
+		big.text("ex =   " + String.format("%.2f", ex),-exY, startX);
+		big.text("ey =   " + String.format("%.2f", ey),-exY, startX + rawSpacingX);
+		big.text("ez =   " + String.format("%.2f", ez),-exY, startX + 2 * rawSpacingX);
 		big.text("happy = " + happy,-happyY, startX + 2 * rawSpacingX);
 		big.popMatrix();
 		
 	}
 
+	//~~~ FUNCTION DRAW CURRENT ID ~~~//
 	void drawtextID(float x, float y, float txtSize, color txtColor){
+		big.textAlign(CENTER);
 		big.fill(txtColor);
 		big.textFont(incBold, txtSize);
   		big.text(nf(pos/256,14), x, y);
 	}
 
+	//~~~ FUNCTION DRAW ID LIST WITH PREVIOUS ID'S AND IF WAS HAPPY OR NOT ~~~//
 	void drawtextIDList(float startX, float startY, float spacingX, float spacingY, float txtSize, color happyCol, color sadCol){
-	  
+	  big.textAlign(CENTER);
 	  big.textFont(incReg, txtSize);
 
 	  for (int i = 0; i < count256; ++i) {

@@ -1,3 +1,4 @@
+//-------------------------- BARS CLASS --------------------------//
 class Bars {
 
 	float x,y1,y2,y3,y4,h,s,w,r,maxVal;
@@ -11,6 +12,7 @@ class Bars {
 	float smoothaDC,smoothaFmin,smoothaFmax,smoothaVmax,smoothgDC,smoothgFmin,smoothgFmax,smoothgVmax,smoothmDC,smoothmFmin,smoothmFmax,smoothmVmax,smootheDC,smootheFmin,smootheFmax,smootheVmax;
 	float smoothAvgaDC,smoothAvgaFmin,smoothAvgaFmax,smoothAvgaVmax,smoothAvggDC,smoothAvggFmin,smoothAvggFmax,smoothAvggVmax,smoothAvgmDC,smoothAvgmFmin,smoothAvgmFmax,smoothAvgmVmax,smoothAvgeDC,smoothAvgeFmin,smoothAvgeFmax,smoothAvgeVmax;
 
+	//~~~ CONSTRUCTOR ~~~//
 	public Bars (float posX, float posY1, float posY2, float posY3, float posY4, float rectHeight, float spacing, float weightStroke, float rounding, float maxValue, color colNormal, color colAvg) {
 		x = posX;
 		y1 = posY1;
@@ -26,19 +28,24 @@ class Bars {
 		cA = colAvg;
 	}
 
+	//~~~ SETUP ~~~//
 	void setup() {
 		initialiseLists();
 		fillList();
 	}
 
+	//~~~ DRAW ~~~//
 	void draw() {
-		assignCookedData();
-		normaliseCookedData();
-		if (happyC == 1.0) {
-			countAvg++;
-			sumAvg();
-			normaliseAvgCookedData();
+		if (pos%256 == 0) {
+			assignCookedData();
+			normaliseCookedData();
+			if (happyC == 1.0) {
+				countAvg++;
+				sumAvg();
+				normaliseAvgCookedData();
+			}
 		}
+
 		smoothCookedData();
 		smoothAvgCookedData();
 
@@ -46,6 +53,7 @@ class Bars {
 		drawNormalData();
 	}
 
+	//~~~ INITIALISE LISTS ~~~//
 	void initialiseLists() {
 		aDCList = new FloatList();
 		aFminList = new FloatList();
@@ -65,6 +73,7 @@ class Bars {
 		eVmaxList = new FloatList();
 	}
 
+	//~~~ FILL LISTS ~~~//
 	void fillList() {
 	  	for (int i = 0; i < childrenC.length; i++) {
 		    aDCList.append(childrenC[i].getFloat("aDC"));
@@ -86,6 +95,7 @@ class Bars {
 	  }
 	}
 
+	//~~~ ASSIGN COOKED DATA ~~~//
 	void assignCookedData() {
 		aDC = childrenC[pos/256-1].getFloat("aDC");
 	    aFmin = childrenC[pos/256-1].getFloat("aFmin");
@@ -105,25 +115,27 @@ class Bars {
 	    eVmax = childrenC[pos/256-1].getFloat("eVmax");
 	}
 
+	//~~~ NORMALISE COOKED DATA ~~~//
 	void normaliseCookedData() {
-		normaDC = map(aDC, aDCList.min(), aDCList.max(), 0, maxVal);
-	    normaFmin = map(aFmin, aFminList.min(), aFminList.max(), 0, maxVal);
-	    normaFmax = map(aFmax, aFmaxList.min(), aFmaxList.max(), 0, maxVal);
-	    normaVmax = map(aVmax, aVmaxList.min(), aVmaxList.max(), 0, maxVal);
-	    normgDC = map(gDC, gDCList.min(), gDCList.max(), 0, maxVal);
-	    normgFmin = map(gFmin, gFminList.min(), gFminList.max(), 0, maxVal);
-	    normgFmax = map(gFmax, gFmaxList.min(), gFmaxList.max(), 0, maxVal);
-	    normgVmax = map(gVmax, gVmaxList.min(), gVmaxList.max(), 0, maxVal);
-	    normmDC = map(mDC, mDCList.min(), mDCList.max(), 0, maxVal);
-	    normmFmin = map(mFmin, mFminList.min(), mFminList.max(), 0, maxVal);
-	    normmFmax = map(mFmax, mFmaxList.min(), mFmaxList.max(), 0, maxVal);
-	    normmVmax = map(mVmax, mVmaxList.min(), mVmaxList.max(), 0, maxVal);
-	    normeDC = map(eDC, eDCList.min(), eDCList.max(), 0, maxVal);
-	    normeFmin = map(eFmin, eFminList.min(), eFminList.max(), 0, maxVal);
-	    normeFmax = map(eFmax, eFmaxList.min(), eFmaxList.max(), 0, maxVal);
-	    normeVmax = map(eVmax, eVmaxList.min(), eVmaxList.max(), 0, maxVal);
+		normaDC = map(aDC, aDCList.min(), aDCList.max(), w*2, maxVal);
+	    normaFmin = map(aFmin, aFminList.min(), aFminList.max(), w*2, maxVal);
+	    normaFmax = map(aFmax, aFmaxList.min(), aFmaxList.max(), w*2, maxVal);
+	    normaVmax = map(aVmax, aVmaxList.min(), aVmaxList.max(), w*2, maxVal);
+	    normgDC = map(gDC, gDCList.min(), gDCList.max(), w*2, maxVal);
+	    normgFmin = map(gFmin, gFminList.min(), gFminList.max(), w*2, maxVal);
+	    normgFmax = map(gFmax, gFmaxList.min(), gFmaxList.max(), w*2, maxVal);
+	    normgVmax = map(gVmax, gVmaxList.min(), gVmaxList.max(), w*2, maxVal);
+	    normmDC = map(mDC, mDCList.min(), mDCList.max(), w*2, maxVal);
+	    normmFmin = map(mFmin, mFminList.min(), mFminList.max(), w*2, maxVal);
+	    normmFmax = map(mFmax, mFmaxList.min(), mFmaxList.max(), w*2, maxVal);
+	    normmVmax = map(mVmax, mVmaxList.min(), mVmaxList.max(), w*2, maxVal);
+	    normeDC = map(eDC, eDCList.min(), eDCList.max(), w*2, maxVal);
+	    normeFmin = map(eFmin, eFminList.min(), eFminList.max(), w*2, maxVal);
+	    normeFmax = map(eFmax, eFmaxList.min(), eFmaxList.max(), w*2, maxVal);
+	    normeVmax = map(eVmax, eVmaxList.min(), eVmaxList.max(), w*2, maxVal);
 	}
 
+	//~~~ SUM FUNCTION ~~~//
 	void sumAvg() {
 		sumaDC = sumaDC + aDC;
 	    sumaFmin = sumaFmin + aFmin;
@@ -143,25 +155,27 @@ class Bars {
 	    sumeVmax = sumeVmax + eVmax;
 	}
 
+	//~~~ NORMALISE AVERAGE COOKED DATA ~~~//
 	void normaliseAvgCookedData() {
-	    normAvgaDC = map(sumaDC/countAvg, aDCList.min(), aDCList.max(), 0, maxVal); 
-	    normAvgaFmin = map(sumaFmin/countAvg, aFminList.min(), aFminList.max(), 0, maxVal);
-	    normAvgaFmax = map(sumaFmax/countAvg, aFmaxList.min(), aFmaxList.max(), 0, maxVal);
-	    normAvgaVmax = map(sumaVmax/countAvg, aVmaxList.min(), aVmaxList.max(), 0, maxVal);
-	    normAvggDC = map(sumgDC/countAvg, gDCList.min(), gDCList.max(), 0, maxVal);
-	    normAvggFmin = map(sumgFmin/countAvg, gFminList.min(), gFminList.max(), 0, maxVal);
-	    normAvggFmax = map(sumgFmax/countAvg, gFmaxList.min(), gFmaxList.max(), 0, maxVal);
-	    normAvggVmax = map(sumgVmax/countAvg, gVmaxList.min(), gVmaxList.max(), 0, maxVal);
-	    normAvgmDC = map(summDC/countAvg, mDCList.min(), mDCList.max(), 0, maxVal);
-	    normAvgmFmin = map(summFmin/countAvg, mFminList.min(), mFminList.max(), 0, maxVal);
-	    normAvgmFmax = map(summFmax/countAvg, mFmaxList.min(), mFmaxList.max(), 0, maxVal);
-	    normAvgmVmax = map(summVmax/countAvg, mVmaxList.min(), mVmaxList.max(), 0, maxVal);
-	    normAvgeDC = map(sumeDC/countAvg, eDCList.min(), eDCList.max(), 0, maxVal);
-	    normAvgeFmin = map(sumeFmin/countAvg, eFminList.min(), eFminList.max(), 0, maxVal);
-	    normAvgeFmax = map(sumeFmax/countAvg, eFmaxList.min(), eFmaxList.max(), 0, maxVal);
-	    normAvgeVmax = map(sumeVmax/countAvg, eVmaxList.min(), eVmaxList.max(), 0, maxVal);	
+	    normAvgaDC = map(sumaDC/countAvg, aDCList.min(), aDCList.max(), w*2, maxVal); 
+	    normAvgaFmin = map(sumaFmin/countAvg, aFminList.min(), aFminList.max(), w*2, maxVal);
+	    normAvgaFmax = map(sumaFmax/countAvg, aFmaxList.min(), aFmaxList.max(), w*2, maxVal);
+	    normAvgaVmax = map(sumaVmax/countAvg, aVmaxList.min(), aVmaxList.max(), w*2, maxVal);
+	    normAvggDC = map(sumgDC/countAvg, gDCList.min(), gDCList.max(), w*2, maxVal);
+	    normAvggFmin = map(sumgFmin/countAvg, gFminList.min(), gFminList.max(), w*2, maxVal);
+	    normAvggFmax = map(sumgFmax/countAvg, gFmaxList.min(), gFmaxList.max(), w*2, maxVal);
+	    normAvggVmax = map(sumgVmax/countAvg, gVmaxList.min(), gVmaxList.max(), w*2, maxVal);
+	    normAvgmDC = map(summDC/countAvg, mDCList.min(), mDCList.max(), w*2, maxVal);
+	    normAvgmFmin = map(summFmin/countAvg, mFminList.min(), mFminList.max(), w*2, maxVal);
+	    normAvgmFmax = map(summFmax/countAvg, mFmaxList.min(), mFmaxList.max(), w*2, maxVal);
+	    normAvgmVmax = map(summVmax/countAvg, mVmaxList.min(), mVmaxList.max(), w*2, maxVal);
+	    normAvgeDC = map(sumeDC/countAvg, eDCList.min(), eDCList.max(), w*2, maxVal);
+	    normAvgeFmin = map(sumeFmin/countAvg, eFminList.min(), eFminList.max(), w*2, maxVal);
+	    normAvgeFmax = map(sumeFmax/countAvg, eFmaxList.min(), eFmaxList.max(), w*2, maxVal);
+	    normAvgeVmax = map(sumeVmax/countAvg, eVmaxList.min(), eVmaxList.max(), w*2, maxVal);	
 	}
 
+	//~~~ LINEAR INTERPOLATION COOKED DATA ~~~//
 	void smoothCookedData() {
 		float amt = 0.05;
 		smoothaDC = lerp(smoothaDC, normaDC, amt);
@@ -182,6 +196,7 @@ class Bars {
 		smootheVmax = lerp(smootheVmax, normeVmax, amt);
 	}
 
+	//~~~ LINEAR INTERPOLATION AVERAGE COOKED DATA ~~~//
 	void smoothAvgCookedData(){
 		float amt = 0.05;
 		smoothAvgaDC = lerp(smoothAvgaDC, normAvgaDC, amt);

@@ -1,9 +1,11 @@
+//-------------------------- HAPPY CLASS --------------------------//
 class Happy {
 
 	PFont walReg;
 	float cX, cY, cR, bX, bY, bS, tX, tY, tS;
 	color cC, bC, tC;
 
+	//~~~ CONSTRUCTOR ~~~//
 	public Happy (float circleX, float circleY, float circleRadius, float bgX, float bgY, float bgSize, float txtX, float txtY, float txtSize, color circleCol, color bgCol, color txtCol) {
 		cX = circleX; 
 		cY = circleY; 
@@ -19,12 +21,14 @@ class Happy {
 		tC = txtCol;
 	}
 
+	//~~~ DRAW ~~~//
 	void draw() {
 		drawCircleHappy();
 		drawHappyBg();
 		drawTextHappy();	
 	}
 
+	//~~~ DRAW CIRCLE HAPPY ~~~//
 	void drawCircleHappy() {
 		if (happyC == 1.0) {
 			big.noStroke();
@@ -33,6 +37,7 @@ class Happy {
 		}
 	}
 
+	//~~~ DRAW BACKGROUND HAPPY ~~~//
 	void drawHappyBg() {
 		if (happyC == 1.0) {
 			big.noStroke();
@@ -41,15 +46,17 @@ class Happy {
 		}
 	}
 
+	//~~~ TEXT HAPPY OR NOT HAPPY ~~~//
 	void drawTextHappy(){
+		big.textAlign(CENTER);
 		walReg = createFont("gt-walsheim-regular-web.otf", 12);
 		big.fill(tC);
 		if (happyC == 1.0) {
 			big.textFont(walReg, tS);
-		    big.text("HAPPY", tX, tY);
+		    big.text("H A P P Y", tX, tY);
 		} else {
 		    big.textFont(walReg, tS);
-		    big.text("NOT HAPPY", tX, tY);
+		    big.text("N O T   H A P P Y", tX, tY);
 		}
 	}
 

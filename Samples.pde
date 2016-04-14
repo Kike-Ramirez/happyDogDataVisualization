@@ -1,8 +1,10 @@
+//-------------------------- SAMPLES CLASS --------------------------//
 class Samples {
 
 	float x, y, sX, sY, r, w;
 	color cCi, cICi, cCr;
 
+	//~~~ CONSTRUCTOR ~~~//
 	public Samples (float startX, float startY, float spacingX, float spacingY, float radius, float weightStroke, color colCircles, color colInsideCircles, color colCrosses) {
 		x = startX;
 		y = startY;
@@ -15,11 +17,13 @@ class Samples {
 		cCr = colCrosses;
 	}
 
+	//~~~ DRAW ~~~//
 	void draw() {
 		drawCircles();
 		drawCrosses();
 	}
 
+	//~~~ DRAW CIRCLES ~~~//
 	void drawCircles() {
 		for (int i = 0; i < count0_255; ++i) {
 			if (i<86) {
@@ -64,6 +68,7 @@ class Samples {
 		}
 	}
 
+	//~~~ DRAW CROSSES ~~~//
 	void drawCrosses() {
 		big.stroke(cCr);
   		big.strokeWeight(w);
