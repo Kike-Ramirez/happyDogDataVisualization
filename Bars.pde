@@ -11,7 +11,7 @@ class Bars {
 	float smoothaDC,smoothaFmin,smoothaFmax,smoothaVmax,smoothgDC,smoothgFmin,smoothgFmax,smoothgVmax,smoothmDC,smoothmFmin,smoothmFmax,smoothmVmax,smootheDC,smootheFmin,smootheFmax,smootheVmax;
 	float smoothAvgaDC,smoothAvgaFmin,smoothAvgaFmax,smoothAvgaVmax,smoothAvggDC,smoothAvggFmin,smoothAvggFmax,smoothAvggVmax,smoothAvgmDC,smoothAvgmFmin,smoothAvgmFmax,smoothAvgmVmax,smoothAvgeDC,smoothAvgeFmin,smoothAvgeFmax,smoothAvgeVmax;
 
-	public Bars (float posX, float posY1, float posY2, float posY3, float posY4, float rectHeight, float spacing, float weightStroke, float rounding, color colNormal, color colAvg, float maxValue) {
+	public Bars (float posX, float posY1, float posY2, float posY3, float posY4, float rectHeight, float spacing, float weightStroke, float rounding, float maxValue, color colNormal, color colAvg) {
 		x = posX;
 		y1 = posY1;
 		y2 = posY2;
@@ -21,9 +21,9 @@ class Bars {
 		s = spacing;
 		w = weightStroke; 
 		r = rounding;
+		maxVal = maxValue;
 		cN = colNormal; 
 		cA = colAvg;
-		maxVal = maxValue;
 	}
 
 	void setup() {

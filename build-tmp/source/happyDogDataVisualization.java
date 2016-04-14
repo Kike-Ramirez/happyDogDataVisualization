@@ -19,16 +19,19 @@ XML[] childrenR, childrenC;
 PGraphics big;
 PImage bg;
 int pos, count256, countAvg, count0_255, countID;
-float happyC;
+float happyC, scale;
 Tail tail;
-Bars bars;
 Samples samples;
+Bars bars;
+Happy happy;
 Text txt;
 
 public void setup() {
+  scale = 2;
+
   
-  big = createGraphics(2160,3840);
-  bg = loadImage("perrito.png");
+  big = createGraphics(PApplet.parseInt(2160*scale),PApplet.parseInt(3840*scale));
+  bg = loadImage("perrito4.png");
 
   xmlRaw = loadXML("raw_final.xml");
   xmlCooked = loadXML("cooked_final.xml");
@@ -36,18 +39,21 @@ public void setup() {
   childrenC = xmlCooked.getChildren("measure");
   
   //Tail(startX, topY, bottomY, minX, maxX, weightLine, radiusBigCircle, colFillBigCircle, colStroke, colHalfCircle)
-  tail = new Tail(918.5f, 401, 925, 447.746f, 1388.663f, 5, 110.464f, 0xffFFFBF2, color(0), color(255,0,0));
+  tail = new Tail(918.5f*scale, 401*scale, 925*scale, 447.746f*scale, 1388.663f*scale, 5*scale, 110.464f*scale, 0xffFFFBF2, color(0), color(255,0,0));
   //Samples(startX, startY, spacingX, spacingY, radius, weightStroke, colCircles, colInsideCircles, colCrosses)
-  samples = new Samples(568.555f, 1055.091f, 26.473f, 20, 13.156f, 2, color(0), 0xffFFFBF2, color(255,0,0));
-  //Bars(posX, posY1, posY2, posY3, posY4, rectHeight, spacing, weightStroke, rounding, colNormal, colAvg, maxValue)
-  bars = new Bars(1094.548f, 1043.347f, 1364.572f, 1685.798f, 2007.023f, 58.405f, 77.873f, 6, 50, color(0), 0xffffbcb5, 617);
+  samples = new Samples(568.555f*scale, 1055.091f*scale, 26.473f*scale, 20*scale, 13.156f*scale, 2*scale, color(0), 0xffFFFBF2, color(255,0,0));
+  //Bars(posX, posY1, posY2, posY3, posY4, rectHeight, spacing, weightStroke, rounding, maxValue, colNormal, colAvg)
+  bars = new Bars(1094.548f*scale, 1043.347f*scale, 1364.572f*scale, 1685.798f*scale, 2007.023f*scale, 58.405f*scale, 77.873f*scale, 6*scale, 50*scale, 617*scale, color(0), 0xffffbcb5);
+  //Happy(circleX, circleY, circleRadius, bgX, bgY, bgSize, txtX, txtY, txtSize, circleCol, bgCol, txtCol)
+  happy = new Happy(1124.29f*scale, 3073.26f*scale, 21.287f*scale, 1422.966f*scale, 3034.104f*scale, 380.358f*scale, 1613.146f*scale, 3227.794f*scale, 30*scale, color(255,0,0), 0xffffbcb5, color(255,0,0));
   txt = new Text();
   
   bars.setup();
   txt.setup();
 
-  pos = 1420;
+  pos = 900;
   count256 = PApplet.parseInt(pos/256);
+  //countID = int(pos/256)-5;
 }
 
 public void draw() {
@@ -71,11 +77,15 @@ public void draw() {
   big.beginDraw();
     big.background(bg);
     tail.draw();
-    bars.draw();
     samples.draw();
-    txt.draw();
+    bars.draw();
+    happy.draw();
+    txt.assignRawData();
+    txt.drawTextRawData(505.097f*scale, 1098.563f*scale, 709.885f*scale, 1068.918f*scale, 1392.175f*scale, 1718.025f*scale, 2036.524f*scale, 2356.194f*scale, 14.6f*scale, 10*scale, 12*scale, color(255,0,0));
+    txt.drawtextID(918.342f*scale, 3078.907f*scale, 24*scale, color(255, 0, 0));
+    txt.drawtextIDList(516.045f*scale, 3230.353f*scale, 161.965f*scale, 14.602f*scale, 13*scale, color(255,0,0), 0xffffc9c2);
   big.endDraw();
-  //big.save("save"+pos+".png");
+  big.save("save"+pos+".png");
 }
 class Bars {
 
@@ -90,7 +100,7 @@ class Bars {
 	float smoothaDC,smoothaFmin,smoothaFmax,smoothaVmax,smoothgDC,smoothgFmin,smoothgFmax,smoothgVmax,smoothmDC,smoothmFmin,smoothmFmax,smoothmVmax,smootheDC,smootheFmin,smootheFmax,smootheVmax;
 	float smoothAvgaDC,smoothAvgaFmin,smoothAvgaFmax,smoothAvgaVmax,smoothAvggDC,smoothAvggFmin,smoothAvggFmax,smoothAvggVmax,smoothAvgmDC,smoothAvgmFmin,smoothAvgmFmax,smoothAvgmVmax,smoothAvgeDC,smoothAvgeFmin,smoothAvgeFmax,smoothAvgeVmax;
 
-	public Bars (float posX, float posY1, float posY2, float posY3, float posY4, float rectHeight, float spacing, float weightStroke, float rounding, int colNormal, int colAvg, float maxValue) {
+	public Bars (float posX, float posY1, float posY2, float posY3, float posY4, float rectHeight, float spacing, float weightStroke, float rounding, float maxValue, int colNormal, int colAvg) {
 		x = posX;
 		y1 = posY1;
 		y2 = posY2;
@@ -100,9 +110,9 @@ class Bars {
 		s = spacing;
 		w = weightStroke; 
 		r = rounding;
+		maxVal = maxValue;
 		cN = colNormal; 
 		cA = colAvg;
-		maxVal = maxValue;
 	}
 
 	public void setup() {
@@ -326,6 +336,62 @@ class Bars {
 	}
 
 }
+class Happy {
+
+	PFont walReg;
+	float cX, cY, cR, bX, bY, bS, tX, tY, tS;
+	int cC, bC, tC;
+
+	public Happy (float circleX, float circleY, float circleRadius, float bgX, float bgY, float bgSize, float txtX, float txtY, float txtSize, int circleCol, int bgCol, int txtCol) {
+		cX = circleX; 
+		cY = circleY; 
+		cR = circleRadius; 
+		bX = bgX; 
+		bY = bgY; 
+		bS = bgSize; 
+		tX = txtX; 
+		tY = txtY;
+		tS = txtSize;
+		cC = circleCol; 
+		bC = bgCol; 
+		tC = txtCol;
+	}
+
+	public void draw() {
+		drawCircleHappy();
+		drawHappyBg();
+		drawTextHappy();	
+	}
+
+	public void drawCircleHappy() {
+		if (happyC == 1.0f) {
+			big.noStroke();
+		    big.fill(cC);
+		    big.ellipse(cX, cY, cR, cR);
+		}
+	}
+
+	public void drawHappyBg() {
+		if (happyC == 1.0f) {
+			big.noStroke();
+		    big.fill(bC);
+		    big.rect(bX, bY, bS, bS);
+		}
+	}
+
+	public void drawTextHappy(){
+		walReg = createFont("gt-walsheim-regular-web.otf", 12);
+		big.fill(tC);
+		if (happyC == 1.0f) {
+			big.textFont(walReg, tS);
+		    big.text("HAPPY", tX, tY);
+		} else {
+		    big.textFont(walReg, tS);
+		    big.text("NOT HAPPY", tX, tY);
+		}
+	}
+
+}
 class Samples {
 
 	float x, y, sX, sY, r, w;
@@ -507,20 +573,6 @@ class Text {
   		incBold = createFont("Inconsolata-Bold.ttf", 12);
 	}
 
-	public void draw() {
-		assignRawData();
-		drawTextRawData();
-		drawTextHappy();
-		drawtextID();
-		drawtextIDList();
-
-		if (happyC == 1.0f) {
-			big.noStroke();
-		    big.fill(0);
-		    big.ellipse(1124.29f, 3073.26f, 21.287f, 21.287f);
-		}
-	}
-
 	public void assignRawData() {
 		number = childrenR[pos].getInt("Number");
 	  	ax = childrenR[pos].getFloat("ax");
@@ -538,155 +590,139 @@ class Text {
 	  	happy = childrenR[pos].getInt("happy");
 	}
 
-	public void drawTextRawData(){
-		big.fill(0);
+	public void drawTextRawData(float sampleX, float sampleY, float startX, float axY, float gxY, float mxY, float exY, float happyY, float rawSpacingX, float txtSizeSample, float txtSizeRaw, int txtColor){
+		big.fill(txtColor);
 		big.pushMatrix();
 		big.rotate(radians(-90));
 		big.textAlign(CENTER);
 
-		big.textFont(walReg, 10);
-		big.text(count0_255 + "      /      255",-1098.563f, 505.097f);
+		big.textFont(walReg, txtSizeSample);
+		big.text(count0_255 + "      /      255",-sampleY, sampleX);
 
-		big.textFont(walReg, 12);
-		big.text("ax = " + String.format("%.2f", ax),-1068.918f, 709.885f);
-		big.text("ay = " + String.format("%.2f", ay),-1068.918f, 724.485f);
-		big.text("az = " + String.format("%.2f", az),-1068.918f, 739.085f);
-		big.text("gx = " + String.format("%.2f", gx),-1392.175f, 709.885f);
-		big.text("gy = " + String.format("%.2f", gy),-1392.175f, 724.485f);
-		big.text("gz = " + String.format("%.2f", gz),-1392.175f, 739.085f);
-		big.text("mx = " + String.format("%.2f", mx),-1718.025f, 709.885f);
-		big.text("my = " + String.format("%.2f", my),-1718.025f, 724.485f);
-		big.text("mz = " + String.format("%.2f", mz),-1718.025f, 739.085f);
-		big.text("ex = " + String.format("%.2f", ex),-2036.524f, 709.885f);
-		big.text("ey = " + String.format("%.2f", ey),-2036.524f, 724.485f);
-		big.text("ez = " + String.format("%.2f", ez),-2036.524f, 739.085f);
-		big.text("happy = " + happy,-2356.194f,739.085f);
+		big.textFont(walReg, txtSizeRaw);
+		big.text("ax = " + String.format("%.2f", ax),-axY, startX);
+		big.text("ay = " + String.format("%.2f", ay),-axY, startX + rawSpacingX);
+		big.text("az = " + String.format("%.2f", az),-axY, startX + 2 * rawSpacingX);
+		big.text("gx = " + String.format("%.2f", gx),-gxY, startX);
+		big.text("gy = " + String.format("%.2f", gy),-gxY, startX + rawSpacingX);
+		big.text("gz = " + String.format("%.2f", gz),-gxY, startX + 2 * rawSpacingX);
+		big.text("mx = " + String.format("%.2f", mx),-mxY, startX);
+		big.text("my = " + String.format("%.2f", my),-mxY, startX + rawSpacingX);
+		big.text("mz = " + String.format("%.2f", mz),-mxY, startX + 2 * rawSpacingX);
+		big.text("ex = " + String.format("%.2f", ex),-exY, startX);
+		big.text("ey = " + String.format("%.2f", ey),-exY, startX + rawSpacingX);
+		big.text("ez = " + String.format("%.2f", ez),-exY, startX + 2 * rawSpacingX);
+		big.text("happy = " + happy,-happyY, startX + 2 * rawSpacingX);
 		big.popMatrix();
 		
 	}
 
-	public void drawTextHappy(){
-		if (happyC == 1.0f) {
-			big.textFont(walReg,30);
-		    big.text("HAPPY",1613.146f,3227.794f);
-		} else {
-		    big.textFont(walReg,30);
-		    big.text("NOT HAPPY",1613.146f,3227.794f);
-		}
+	public void drawtextID(float x, float y, float txtSize, int txtColor){
+		big.fill(txtColor);
+		big.textFont(incBold, txtSize);
+  		big.text(nf(pos/256,14), x, y);
 	}
 
-	public void drawtextID(){
-		big.textFont(incBold,24);
-  		big.text(nf(pos/256,14),918.343f, 3072.907f+6);
-	}
-
-	public void drawtextIDList(){
-		float col1 = 516.045f;
-	  float col2 = 678.01f;
-	  float col3 = 838.942f;
-	  float col4 = 1000.907f;
-	  float col5 = 1162.675f;
-	  float col6 = 1324.64f;
-	  float b = 3230.353f;
-	  float spacing = 14.602f;
-	  big.textFont(incReg,13);
+	public void drawtextIDList(float startX, float startY, float spacingX, float spacingY, float txtSize, int happyCol, int sadCol){
+	  
+	  big.textFont(incReg, txtSize);
 
 	  for (int i = 0; i < count256; ++i) {
 	    if (i<5) {
 	      if (childrenC[i+countID].getFloat("happy") == 0.0f) {
-	        big.fill(179, 179, 179);
+	        big.fill(sadCol);
 	      } else {
-	        big.fill(0);
+	        big.fill(happyCol);
 	      }
 	      if (count256<5) {
-	        big.text(nf(i,14), col1, b-(i-count256)*spacing-spacing);
+	        big.text(nf(i,14), startX, startY-(i-count256)*spacingY-spacingY);
 	      } else {
-	        big.text(nf(i+countID,14), col1, b-(i-5)*spacing-spacing);
+	        big.text(nf(i+countID,14), startX, startY-(i-5)*spacingY-spacingY);
 	      }
 	    } 
 	    if (i>=5 && i<10) {
 	      if (count256<10) {
 	        if (childrenC[i-5].getFloat("happy") == 0.0f) {
-	          big.fill(179, 179, 179);
+	          big.fill(sadCol);
 	        } else {
-	          big.fill(0);
+	          big.fill(happyCol);
 	        }
-	        big.text(nf(i-5,14), col2, b-(i-count256)*spacing-spacing);
+	        big.text(nf(i-5,14), startX + spacingX, startY-(i-count256)*spacingY-spacingY);
 	      } else {
 	        if (childrenC[i-10+countID].getFloat("happy") == 0.0f) {
-	          big.fill(179, 179, 179);
+	          big.fill(sadCol);
 	        } else {
-	          big.fill(0);
+	          big.fill(happyCol);
 	        }
-	        big.text(nf(i-10+countID,14), col2, b-(i-10)*spacing-spacing);
+	        big.text(nf(i-10+countID,14), startX + spacingX, startY-(i-10)*spacingY-spacingY);
 	      }
 	    }
 	    if (i>=10 && i<15) {
 	      if (count256<15) {
 	        if (childrenC[i-10].getFloat("happy") == 0.0f) {
-	          big.fill(179, 179, 179);
+	          big.fill(sadCol);
 	        } else {
-	          big.fill(0);
+	          big.fill(happyCol);
 	        }
-	        big.text(nf(i-10,14), col3, b-(i-count256)*spacing-spacing);
+	        big.text(nf(i-10,14), startX + 2 * spacingX, startY-(i-count256)*spacingY-spacingY);
 	      } else {
 	        if (childrenC[i-20+countID].getFloat("happy") == 0.0f) {
-	          big.fill(179, 179, 179);
+	          big.fill(sadCol);
 	        } else {
-	          big.fill(0);
+	          big.fill(happyCol);
 	        }
-	        big.text(nf(i-20+countID,14), col3, b-(i-15)*spacing-spacing);
+	        big.text(nf(i-20+countID,14), startX + 2 * spacingX, startY-(i-15)*spacingY-spacingY);
 	      }
 	    }
 	    if (i>=15 && i<20) {
 	      if (count256<20) {
 	        if (childrenC[i-15].getFloat("happy") == 0.0f) {
-	          big.fill(179, 179, 179);
+	          big.fill(sadCol);
 	        } else {
-	          big.fill(0);
+	          big.fill(happyCol);
 	        }
-	        big.text(nf(i-15,14), col4, b-(i-count256)*spacing-spacing);
+	        big.text(nf(i-15,14), startX  + 3 * spacingX, startY-(i-count256)*spacingY-spacingY);
 	      } else {
 	        if (childrenC[i-30+countID].getFloat("happy") == 0.0f) {
-	          big.fill(179, 179, 179);
+	          big.fill(sadCol);
 	        } else {
-	          big.fill(0);
+	          big.fill(happyCol);
 	        }
-	        big.text(nf(i-30+countID,14), col4, b-(i-20)*spacing-spacing);
+	        big.text(nf(i-30+countID,14), startX  + 3 * spacingX, startY-(i-20)*spacingY-spacingY);
 	      }
 	    }
 	    if (i>=20 && i<25) {
 	      if (count256<25) {
 	        if (childrenC[i-20].getFloat("happy") == 0.0f) {
-	          big.fill(179, 179, 179);
+	          big.fill(sadCol);
 	        } else {
-	          big.fill(0);
+	          big.fill(happyCol);
 	        }
-	        big.text(nf(i-20,14), col5, b-(i-count256)*spacing-spacing);
+	        big.text(nf(i-20,14), startX  + 4 * spacingX, startY-(i-count256)*spacingY-spacingY);
 	      } else {
 	        if (childrenC[i-40+countID].getFloat("happy") == 0.0f) {
-	          big.fill(179, 179, 179);
+	          big.fill(sadCol);
 	        } else {
-	          big.fill(0);
+	          big.fill(happyCol);
 	        }
-	        big.text(nf(i-40+countID,14), col5, b-(i-25)*spacing-spacing);
+	        big.text(nf(i-40+countID,14), startX  + 4 * spacingX, startY-(i-25)*spacingY-spacingY);
 	      }
 	    }
 	    if (i>=25 && i<30) {
 	      if (count256<30) {
 	        if (childrenC[i-25].getFloat("happy") == 0.0f) {
-	          big.fill(179, 179, 179);
+	          big.fill(sadCol);
 	        } else {
-	          big.fill(0);
+	          big.fill(happyCol);
 	        }
-	        big.text(nf(i-25,14), col6, b-(i-count256)*spacing-spacing);
+	        big.text(nf(i-25,14), startX + 5 * spacingX, startY-(i-count256)*spacingY-spacingY);
 	      } else {
 	        if (childrenC[i-50+countID].getFloat("happy") == 0.0f) {
-	          big.fill(179, 179, 179);
+	          big.fill(sadCol);
 	        } else {
-	          big.fill(0);
+	          big.fill(happyCol);
 	        }
-	        big.text(nf(i-50+countID,14), col6, b-(i-30)*spacing-spacing);
+	        big.text(nf(i-50+countID,14), startX + 5 * spacingX, startY-(i-30)*spacingY-spacingY);
 	      }
 	    }
 	  }	
