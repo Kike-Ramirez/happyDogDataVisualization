@@ -18,7 +18,6 @@ public class happyDogDataVisualization extends PApplet {
 XML xmlRaw, xmlCooked;
 XML[] childrenR, childrenC;
 PGraphics big;
-PImage bg, img;
 int pos, count256, countAvg, count0_255, countID;
 float happyC, scale;
 Tail tail;
@@ -26,6 +25,8 @@ Samples samples;
 Bars bars;
 Happy happy;
 Text txt;
+Trees tree;
+Background bg;
 
 //-------------------------- SETUP --------------------------//
 public void setup() {
@@ -35,8 +36,8 @@ public void setup() {
   //~~~ SIZE & BACKGROUND ~~~//
   
   big = createGraphics(PApplet.parseInt(2160*scale),PApplet.parseInt(3840*scale));
-  //if scale = 2 perrito_x2.png & if scale 0,25 perrito_x0,25.png
-  bg = loadImage("perrito_x0,25.png");
+  //rescale bg
+  bg = new Background();
 
   //~~~ LOAD XML ~~~//
   xmlRaw = loadXML("raw_final.xml");
@@ -53,6 +54,7 @@ public void setup() {
   bars = new Bars(1094.548f*scale, 1043.347f*scale, 1364.572f*scale, 1685.798f*scale, 2007.023f*scale, 58.405f*scale, 77.873f*scale, 6*scale, 50*scale, 617*scale, color(0), 0xffffbcb5);
   //Happy(circleX, circleY, circleRadius, bgX, bgY, bgSize, txtX, txtY, txtSize, circleCol, bgCol, txtCol)
   happy = new Happy(1124.29f*scale, 3073.26f*scale, 21.287f*scale, 1422.966f*scale, 3034.104f*scale, 380.358f*scale, 1613.146f*scale, 3227.794f*scale, 30*scale, color(255,0,0), 0xffffbcb5, color(255,0,0));
+  tree = new Trees();
   txt = new Text();
   
   //~~~ PARTS THAT NEED SETUP ~~~//
@@ -60,24 +62,17 @@ public void setup() {
   txt.setup();
 
   //~~~ UNCOMMENT TO START AT FURTHER SAMPLE (just edit pos) ~~~//
-   //pos = 900;
-  // count256 = int(pos/256);
-  // if (pos>1280) {
-  //   countID = int(pos/256)-5;
-  // }
+   pos = 1100;
+  count256 = PApplet.parseInt(pos/256);
+  if (pos>1280) {
+    countID = PApplet.parseInt(pos/256)-5;
+  }
 }
 
 //-------------------------- DRAW --------------------------//
 public void draw() {
   //~~~ MAIN COUNTER, POS = SAMPLE NUMBER ~~~//
-  pos++;
-
-  //~~~ RENDER ON SMALLER SCREEN ~~~//
-  if(pos%2 == 0) {  
-   img = big.get(0, 0, big.width, big.height);  
-   img.resize(width,height);
-   image(img,0,0);
-  }  
+  pos++; 
 
   //~~~ SUBCOUNTERS & HAPPY COOKED STORED FOR GLOBAL USE ~~~//
   if (pos%256 == 0) {
@@ -88,14 +83,15 @@ public void draw() {
     }
   }
   count0_255 = pos-256*count256;
-
+ 
   //~~~ DRAW ON PGRAPHICS ~~~//
   big.beginDraw();
-    big.background(bg);
+    bg.draw();
     tail.draw();
     samples.draw();
     bars.draw();
     happy.draw();
+    tree.draw();
     txt.assignRawData();
     txt.drawTextRawData(503.191f*scale, 1059.28f*scale, 708.946f*scale, 1042.875f*scale, 1364.156f*scale, 1685.798f*scale, 2006.417f*scale, 2327.459f*scale, 14.6f*scale, 10*scale, 12*scale, color(255,0,0));
     txt.drawtextID(918.342f*scale, 3078.907f*scale, 24*scale, color(255, 0, 0));
@@ -104,6 +100,78 @@ public void draw() {
 
   //~~~ UNCOMMENT TO RENDER ~~~//
   //big.save("save" + pos + ".png");
+
+  //~~~ RENDER ON SMALLER SCREEN ~~~//
+  //if(pos%10 == 0) {  
+   PImage img = big.get(0, 0, big.width, big.height);  
+   img.resize(width,height);
+   image(img,0,0);
+  //} 
+  
+  fill(0);
+  //text(int(frameRate), 50,50);
+}
+//-------------------------- BACKGROUND CLASS --------------------------//
+class Background {
+
+	PImage bg, bgTree1, bgTree2, bgTree3, bgTree4, bgTree5, bgTree6, bgTree7, bgTree8, bgTree9;
+
+	//~~~ CONSTRUCTOR ~~~//
+	public Background () {
+		bg = loadImage("perrito.png");
+		bgTree1 = loadImage("perrito_tree1.png");
+		bgTree2 = loadImage("perrito_tree2.png");
+		bgTree3 = loadImage("perrito_tree3.png");
+  		bgTree4 = loadImage("perrito_tree4.png");
+  		bgTree5 = loadImage("perrito_tree5.png");
+  		bgTree6 = loadImage("perrito_tree6.png");
+  		bgTree7 = loadImage("perrito_tree7.png");
+  		bgTree8 = loadImage("perrito_tree8.png");
+  		bgTree9 = loadImage("perrito_tree9.png");
+
+  		resizeBg();
+	}
+
+	//~~~ SETUP ~~~//
+
+	//~~~ DRAW ~~~//
+	public void draw() {
+		if (count0_255 > 11 && count0_255 < 47) {
+	      	big.background(bgTree1);
+	    } else if (count0_255 > 47 && count0_255 < 63) {
+	      	big.background(bgTree2);
+	    } else if (count0_255 > 63 && count0_255 < 89) {
+	      	big.background(bgTree3);
+	    } else if (count0_255 > 89 && count0_255 < 120) {
+	      	big.background(bgTree4);
+	    } else if (count0_255 > 120 && count0_255 < 146) {
+	      	big.background(bgTree5);
+	    } else if (count0_255 > 146 && count0_255 < 182) {
+	      	big.background(bgTree6);
+	    } else if (count0_255 > 182 && count0_255 < 203) {
+	      	big.background(bgTree7);
+	    } else if (count0_255 > 203 && count0_255 < 229) {
+	      	big.background(bgTree8);
+	    } else if (count0_255 > 229 && count0_255 < 255) {
+	      	big.background(bgTree9);
+	    } else {
+	      	big.background(bg);
+	    }
+	}
+
+	public void resizeBg() {
+		bg.resize(big.width,big.height);
+		bgTree1.resize(big.width,big.height);
+		bgTree2.resize(big.width,big.height);
+		bgTree3.resize(big.width,big.height);
+		bgTree4.resize(big.width,big.height);
+		bgTree5.resize(big.width,big.height);
+		bgTree6.resize(big.width,big.height);
+		bgTree7.resize(big.width,big.height);
+		bgTree8.resize(big.width,big.height);
+		bgTree9.resize(big.width,big.height);
+	}
+
 }
 //-------------------------- BARS CLASS --------------------------//
 class Bars {
@@ -784,6 +852,351 @@ class Text {
 	  }	
 	}
 
+}
+//-------------------------- HAPPY CLASS --------------------------//
+class Trees {
+
+	PFont walBold;
+	float aDC,aFmin,aFmax,aVmax,gDC,gFmin,gFmax,gVmax,mDC,mFmin,mFmax,mVmax,eDC,eFmin,eFmax,eVmax;
+	float rW, rH, sW, fS;
+	int rC;
+	boolean happyTree1, happyTree2, happyTree3, happyTree4, happyTree5, happyTree6, happyTree7, happyTree8, happyTree9;
+
+	//~~~ CONSTRUCTOR ~~~//
+	public Trees () {
+		rW = 189.402f*scale;
+		rH = 43.04f*scale;
+		sW = 5*scale;
+		fS = 14*scale;
+		rC = 0xffffbcb5;
+
+
+
+		walBold = createFont("GT-Walsheim-Bold.ttf", fS);
+	}
+
+	//~~~ DRAW ~~~//
+	public void draw() {
+		assignCookedData();
+
+		big.textFont(walBold, fS);
+		big.textAlign(CENTER);
+		  
+		drawTree1();
+		drawTree2();
+		drawTree3();
+		drawTree4();
+		drawTree5();
+		drawTree6();
+		drawTree7();
+		drawTree8();
+		drawTree9();
+
+		circlesTrees();
+	}
+
+	public void assignCookedData() {
+		aDC = childrenC[pos/256-1].getFloat("aDC");
+	    aFmin = childrenC[pos/256-1].getFloat("aFmin");
+	    aFmax = childrenC[pos/256-1].getFloat("aFmax");
+	    aVmax = childrenC[pos/256-1].getFloat("aVmax");
+	    gDC = childrenC[pos/256-1].getFloat("gDC");
+	    gFmin = childrenC[pos/256-1].getFloat("gFmin");
+	    gFmax = childrenC[pos/256-1].getFloat("gFmax");
+	    gVmax = childrenC[pos/256-1].getFloat("gVmax");
+	    mDC = childrenC[pos/256-1].getFloat("mDC");
+	    mFmin = childrenC[pos/256-1].getFloat("mFmin");
+	    mFmax = childrenC[pos/256-1].getFloat("mFmax");
+	    mVmax = childrenC[pos/256-1].getFloat("mVmax");
+	    eDC = childrenC[pos/256-1].getFloat("eDC");
+	    eFmin = childrenC[pos/256-1].getFloat("eFmin");
+	    eFmax = childrenC[pos/256-1].getFloat("eFmax");
+	    eVmax = childrenC[pos/256-1].getFloat("eVmax");
+	    // gFmin = -1;
+	    // mVmax = 1;
+	    // gVmax = -1;
+	    // gDC = 0;
+	}
+
+	public void drawTree1() {
+		if (count0_255 > 16 && count0_255 < 47) {
+			kleur(1197.646f, 2590.955f, "gVmax <= -1.0149");
+			if (gVmax <= -1.0149f && count0_255 > 21) {
+			    kleur(1197.646f, 2665.291f, "eDC <= 0.1089");
+			    if (eDC <= 0.1089f && count0_255 > 26) {
+			    	kleur(1197.646f, 2739.627f, "mDC <= 0.5142"); 
+			      	if (mDC <= 0.5142f && count0_255 > 31) {
+			        	kleur(1197.646f, 2813.964f, "eVmax <= -0.8200"); 
+			        	if (eVmax <= -0.8200f && count0_255 > 36) {
+					        kleur(1197.646f, 2888.631f, "mDC <= -0.5134"); 
+					        if (mDC <= -0.5134f && count0_255 > 41) {
+					        	kleur(1197.646f, 2962.968f, "T  R  U  E"); 
+					        	happyTree1 = true;
+						    } else if (mDC > -0.5134f && count0_255 > 41) {
+						      	kleur(1415.966f, 2962.968f, "F  A  L  S  E");
+						    }
+					    } else if (eVmax > -0.8200f && count0_255 > 36) {
+					      	kleur(1415.966f, 2888.631f, "F  A  L  S  E");
+					    }
+			      	} else if (mDC > 0.5142f && count0_255 > 31) {
+			      		kleur(1415.966f, 2813.964f, "T  R  U  E");
+			      		happyTree1 = true;
+			      	}
+			    } else if (eDC > 0.1089f && count0_255 > 26) {
+			    	kleur(1415.966f, 2739.627f, "T  R  U  E");
+			    	happyTree1 = true;
+			    }
+			} else if (gVmax > -1.0149f && count0_255 > 21) {
+			  	kleur(1415.966f, 2665.291f, "T  R  U  E");
+			  	happyTree1 = true;
+			}
+		}
+	}
+
+	public void drawTree2() {
+		if (count0_255 > 52 && count0_255 < 63) {
+			kleur(1197.646f, 2620.272f, "gDC <= 0.4528");
+			if (gDC <= 0.4528f && count0_255 > 57) {
+			    kleur(1197.646f, 2694.609f, "T  R  U  E");
+			    happyTree2 = true;
+			} else if (gDC > 0.4528f && count0_255 > 57) {
+			  	kleur(1415.966f, 2694.609f, "F  A  L  S  E");
+			}
+		}
+	}
+
+	public void drawTree3() {
+		if (count0_255 > 68 && count0_255 < 89) {
+			kleur(1197.646f, 2620.272f, "aFmin <= 1.0180");
+			if (aFmin <= 1.0180f && count0_255 > 73) {
+			    kleur(1197.646f, 2694.608f, "gVmax <= -1.0025");
+			    if (gVmax <= -1.0025f && count0_255 > 78) {
+			    	kleur(1197.646f, 2768.945f, "aDC <= 0.7502"); 
+			      if (aDC <= 0.7502f && count0_255 > 83) {
+			        kleur(1197.646f, 2843.282f, "T  R  U  E"); 
+			        happyTree3 = true;
+			      } else if (aDC > 0.7502f && count0_255 > 83) {
+			      	kleur(1415.966f, 2843.282f, "F  A  L  S  E");
+			      }
+			    } else if (gVmax > -1.0025f && count0_255 > 78) {
+			    	kleur(1415.966f, 2768.945f, "T  R  U  E");
+			    	happyTree3 = true;
+			    }
+			} else if (aFmin > 1.0180f && count0_255 > 73) {
+			  	kleur(1415.966f, 2694.608f, "F  A  L  S  E");
+			}
+		}
+	}
+
+	public void drawTree4() {
+		if (count0_255 > 94 && count0_255 < 120) {
+			kleur(1415.209f, 2620.272f, "gFmin <= -0.3535");
+			if (gFmin <= -0.3535f && count0_255 > 99) {
+			    kleur(1415.646f, 2694.608f, "mVmax <= 1.1080");
+			    if (mVmax <= 1.1080f && count0_255 > 104) {
+			    	kleur(1197.646f, 2768.945f, "gVmax <= -0.0097"); 
+			      if (gVmax <= -0.0097f && count0_255 > 109) {
+			        kleur(1197.646f, 2843.281f, "eVmax <= -0.7995"); 
+			        if (eVmax <= -0.7995f && count0_255 > 114) {
+			          	kleur(1197.646f, 2917.281f, "T  R  U  E");
+			          	happyTree4 = true;
+			        } else if (eVmax > -0.7995f && count0_255 > 114){
+			        	kleur(1415.966f, 2917.281f, "F  A  L  S  E");
+			        }
+			      } else if (gVmax > -0.0097f && count0_255 > 109) {
+			      	kleur(1415.966f, 2843.281f, "F  A  L  S  E");
+			      }
+			    } else if (mVmax > 1.1080f && count0_255 > 104) {
+			    	kleur(1415.966f, 2768.945f, "T  R  U  E");
+			    	happyTree4 = true;
+			    }
+			} else if (gFmin > -0.3535f && count0_255 > 99) {
+			  	kleur(1633.966f, 2694.608f, "gDC <= 0.5389");
+			  	if (gDC <= 0.5389f && count0_255 > 104) {
+			      	kleur(1633.646f, 2768.945f, "T  R  U  E");
+			      	happyTree4 = true;
+			    } else if (gDC > 0.5389f && count0_255 > 104){
+			    	kleur(1631.299f, 2840.945f, "F  A  L  S  E");
+			    }
+			}
+		}
+	}
+
+	public void drawTree5() {
+		if (count0_255 > 125 && count0_255 < 146) {
+			kleur(1197.646f, 2620.272f, "aFmax <= -0.1135");
+			if (aFmax <= -0.1135f && count0_255 > 130) {
+			    kleur(1197.646f, 2694.608f, "aFmax <= -0.4794");
+			    if (aFmax <= -0.4794f && count0_255 > 135) {
+			    	kleur(1197.646f, 2768.945f, "aDC <= 0.7502"); 
+			      if (aDC <= 0.2837f && count0_255 > 140) {
+			        kleur(1197.646f, 2843.282f, "T  R  U  E"); 
+			        happyTree5 = true;
+			      } else if (aDC > 0.2837f && count0_255 > 140) {
+			      	kleur(1415.966f, 2843.282f, "F  A  L  S  E");
+			      }
+			    } else if (aFmax > -0.47945f && count0_255 > 135) {
+			    	kleur(1415.966f, 2768.945f, "F  A  L  S  E");
+			    }
+			} else if (aFmax > -0.1135f && count0_255 > 130) {
+			  	kleur(1415.966f, 2694.608f, "T  R  U  E");
+			  	happyTree5 = true;
+			}
+		}
+	}
+
+	public void drawTree6() {
+		if (count0_255 > 151 && count0_255 < 182) {
+			kleur(1197.646f, 2590.955f, "eDC <= 0.1089");
+			if (eDC <= 0.1089f && count0_255 > 156) {
+			    kleur(1197.646f, 2665.291f, "aDC <= -0.4988");
+			    if (aDC <= -0.4988f && count0_255 > 161) {
+			    	kleur(1197.646f, 2739.627f, "eVmax <= -0.8159"); 
+			      	if (eVmax <= -0.8159f && count0_255 > 166) {
+			        	kleur(1197.646f, 2813.964f, "eVmax <= 1.1893"); 
+			        	if (eVmax <= 1.1893f && count0_255 > 171) {
+					        kleur(1197.646f, 2888.631f, "mFmin <= 0.3847"); 
+					        if (mFmin <= 0.3847f && count0_255 > 176) {
+					        	kleur(1197.646f, 2962.968f, "T  R  U  E");
+					        	happyTree6 = true; 
+						    } else if (mFmin <= 0.3847f && count0_255 > 176) {
+						      	kleur(1415.966f, 2962.968f, "F  A  L  S  E");
+						    }
+					    } else if (eVmax <= 1.1893f && count0_255 > 171) {
+					      	kleur(1415.966f, 2888.631f, "F  A  L  S  E");
+					    }
+			      	} else if (eVmax > -0.8159f && count0_255 > 166) {
+			      		kleur(1415.966f, 2813.964f, "T  R  U  E");
+			      		happyTree6 = true; 
+			      	}
+			    } else if (aDC > -0.4988f && count0_255 > 161) {
+			    	kleur(1415.966f, 2739.627f, "T  R  U  E");
+			    	happyTree6 = true; 
+			    }
+			} else if (eDC > 0.1089f && count0_255 > 156) {
+			  	kleur(1415.966f, 2665.291f, "T  R  U  E");
+			  	happyTree6 = true; 
+			}
+		}
+	}
+
+	public void drawTree7() {
+		if (count0_255 > 187 && count0_255 < 203) {
+			kleur(1197.646f, 2620.272f, "gFmax <= -0.3826");
+			if (gFmax <= -0.3826f && count0_255 > 192) {
+			    kleur(1197.646f, 2694.608f, "gDC <= 0.3016"); 
+			      if (gDC <= 0.3016f && count0_255 > 197) {
+			        kleur(1197.646f, 2769.276f, "T  R  U  E"); 
+			        happyTree7 = true; 
+			      } else if (gDC > 0.3016f && count0_255 > 197) {
+			      	kleur(1415.966f, 2769.276f, "F  A  L  S  E");
+			      }
+			} else if (gFmax > -0.3826f && count0_255 > 192) {
+			  	kleur(1415.966f, 2694.608f, "T  R  U  E");
+			  	happyTree7 = true;
+			}
+		}
+	}
+
+	public void drawTree8() {
+		if (count0_255 > 208 && count0_255 < 229) {
+			kleur(1197.646f, 2620.272f, "aFmax <= -0.0630");
+			if (aFmax <= -0.0630f && count0_255 > 213) {
+			    kleur(1197.646f, 2694.608f, "eVmax <= -0.8159");
+			    if (eVmax <= -0.8159f && count0_255 > 218) {
+			    	kleur(1197.646f, 2768.945f, "aVmax <= 0.0912"); 
+			      if (aVmax <= 0.0912f && count0_255 > 223) {
+			        kleur(1197.646f, 2843.282f, "T  R  U  E"); 
+			        happyTree8 = true;
+			      } else if (aVmax <= 0.0912f && count0_255 > 223) {
+			      	kleur(1415.966f, 2843.282f, "F  A  L  S  E");
+			      }
+			    } else if (eVmax <= -0.8159f && count0_255 > 218) {
+			    	kleur(1415.966f, 2768.945f, "F  A  L  S  E");
+			    }
+			} else if (aFmax > -0.0630f && count0_255 > 213) {
+			  	kleur(1415.966f, 2694.608f, "T  R  U  E");
+			  	happyTree8 = true;
+			}
+		}
+	}
+
+	public void drawTree9() {
+		if (count0_255 > 234 && count0_255 < 255) {
+			kleur(1197.646f, 2620.272f, "gDC <= 0.6194");
+			if (gDC <= 0.6194f && count0_255 > 239) {
+			    kleur(1197.646f, 2694.608f, "mFmin <= 0.8170");
+			    if (mFmin <= 0.8170f && count0_255 > 244) {
+			    	kleur(1197.646f, 2768.945f, "aFmax <= -0.3312"); 
+			      if (aFmax <= -0.3312f && count0_255 > 249) {
+			        kleur(1197.646f, 2843.282f, "T  R  U  E"); 
+			        happyTree9 = true;
+			      } else if (aFmax > -0.3312f && count0_255 > 249) {
+			      	kleur(1415.966f, 2843.282f, "F  A  L  S  E");
+			      }
+			    } else if (mFmin > 0.8170f && count0_255 > 244) {
+			    	kleur(1415.966f, 2768.945f, "T  R  U  E");
+			    	happyTree9 = true;
+			    }
+			} else if (gDC > 0.6194f && count0_255 > 239) {
+			  	kleur(1415.966f, 2694.608f, "F  A  L  S  E");
+			}
+		}
+	}
+
+	public void kleur(float x, float y, String string) {
+		big.fill(rC);
+		big.noStroke();
+		big.rect(x*scale+sW/2, y*scale+sW/2, rW-sW, rH-sW);
+
+		big.fill(0);
+		big.text(string, x*scale+rW/2, y*scale+rH/2+fS/3);
+	}
+
+	public void circlesTrees() {
+		big.fill(255, 0, 0);
+		big.noStroke();
+		if (happyTree1 == true) {
+			big.ellipse(1123.85f*scale, 2649.474f*scale, 11.278f*scale, 11.278f*scale);
+		}
+		if (happyTree2 == true) {
+			big.ellipse(1123.85f*scale, 2689.45f*scale, 11.278f*scale, 11.278f*scale);
+		}
+		if (happyTree3 == true) {
+			big.ellipse(1123.85f*scale, 2729.45f*scale, 11.278f*scale, 11.278f*scale);
+		}
+		if (happyTree4 == true) {
+			big.ellipse(1123.85f*scale, 2769.849f*scale, 11.278f*scale, 11.278f*scale);
+		}
+		if (happyTree5 == true) {
+			big.ellipse(1123.85f*scale, 2809.974f*scale, 11.278f*scale, 11.278f*scale);
+		}
+		if (happyTree6 == true) {
+			big.ellipse(1123.85f*scale, 2850.099f*scale, 11.278f*scale, 11.278f*scale);
+		}
+		if (happyTree7 == true) {
+			big.ellipse(1123.85f*scale, 2890.224f*scale, 11.278f*scale, 11.278f*scale);
+		}
+		if (happyTree8 == true) {
+			big.ellipse(1123.85f*scale, 2930.349f*scale, 11.278f*scale, 11.278f*scale);
+		}
+		if (happyTree9 == true) {
+			big.ellipse(1123.85f*scale, 2970.474f*scale, 11.278f*scale, 11.278f*scale);
+		}
+
+		
+		if (pos%256 ==  0) {
+			happyTree1 = false;
+			happyTree2 = false;
+			happyTree3 = false;
+			happyTree4 = false;
+			happyTree5 = false;
+			happyTree6 = false;
+			happyTree7 = false;
+			happyTree8 = false;
+			happyTree9 = false;
+		}
+	}
 }
   public void settings() {  size(450,800); }
   static public void main(String[] passedArgs) {
